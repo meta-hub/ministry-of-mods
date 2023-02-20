@@ -1,6 +1,4 @@
 local Locales = LoadResource("locales")
 
-print("Hey")
-print(Locales.Translate)
-print(Exports._T)
-print("Complete")
+print(Exports.locales._T("player_connected"))
+print(Locales.Translate("player_connected"))

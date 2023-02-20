@@ -29,23 +29,28 @@ end
 Exports = {}
 
 setmetatable(Exports, {
-    __index = function(self, name)
-        return exports[name]
+    __index = function(self, resourceName)
+        return exports[resourceName]
     end,
 
-    __call = function(self, name, fn)
-        exports[name] = fn
+    __call = function(self, fnName, fn)
+        local resourceName = getfenv(2)._RESOURCE
+
+        exports[resourceName] = exports[resourceName] or {}
+        exports[resourceName][fnName] = fn
     end
 })
 
 local function createEnvironment(resourceName, version)
     local env = {}
-    local gProt = {}
-  
-    env._RESOURCE = resourceName
-    env._VERSION  = version or "1.0.0"
-    env._G        = _G
-    env._ENV      = setmetatable(env, {
+
+    local gProt = {
+        _RESOURCE = resourceName,
+        _VERSION = version
+    }
+    
+    env._G = _G
+    env._ENV = setmetatable(env, {
         __index = function(self, k)
             if gProt[k] == nil then
                 return _G[k]
@@ -122,7 +127,8 @@ function LoadResource(resourceName, options)
         return error("resource has invalid resource.json entry file: " .. resourceName)
     end    
 
-    local env = options.env or createEnvironment(resourceName, version)
+    local alias = options.injectionAlias or resourceName
+    local env = options.env or createEnvironment(resourceName, options.version or "default")
 
     local globalTable = {}
 
@@ -159,15 +165,15 @@ function LoadResource(resourceName, options)
     end
 
     if options.injectGlobal then
-        local alias = options.injectionAlias or resourceName
-
         _G[alias] = globalTable
     else
         return globalTable
     end
 end
 
-function LoadData(path)
+function LoadData(resourceName, filePath)
+    local path = "modules/" .. resourceName .. "/" .. filePath
+
     if not fileExists(path) then
         return error("invalid file: " .. path)
     end
@@ -177,7 +183,7 @@ function LoadData(path)
     return json.decode(content)
 end
 
-local initResources = LoadData("resources.json")
+local initResources = json.decode(readFile(("resources.json")))
 
 if type(initResources) ~= "table" then
     return

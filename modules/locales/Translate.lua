@@ -1,7 +1,3 @@
-local locales = {
-    en = {}
-}
-
 return function(str)
-    return locales.en[str] or ""
+    return Locales[str] or ""
 end
