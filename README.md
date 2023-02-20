@@ -32,10 +32,10 @@ print(Exports.locales._T("player_connected"))
 -- To define an export:
 Exports("myExport", function(arg)
     if arg then
-        return Foo
+        return "foo"
     end
     
-    return Bar
+    return "bar"
 end)
 ```
 Events Example:
@@ -45,7 +45,7 @@ TriggerEvent("world:setWeather", "Rainy01")
 
 -- To define an event:
 AddEventHandler("myEvent", function(foo)
-    print(bar)
+    print(foo, "bar")
 end)
 ```
 
