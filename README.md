@@ -8,7 +8,7 @@ This is a resource to handle containerization and cross-resource communication f
 
 - Clone this repository into your `HogwartsLegacy/Server/mods/` directory.
 - Check the `resources.json` file to disable any modules you might not want active on your server.
-- Start your server, and observer the console. If no errors persist, the resource should now be running.
+- Start your server, and observer the console. If no errors are present, the resource should now be running.
 
 ## For Developers
 
