@@ -148,6 +148,8 @@ local function handleReturn(resourceName, options, globalTable)
 end
 
 function LoadResource(resourceName, options)
+    options = options or {}
+
     if loadedResources[resourceName] then
         return handleReturn(resourceName, options, loadedResources[resourceName])
     end
