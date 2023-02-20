@@ -6,9 +6,7 @@ local exports = {}
 function AddEventHandler(eventName, callback)
     if type(eventName) ~= "string" then
         return error("AddEventHandler requires string for first arg")
-    end
-
-    if type(callback) ~= "function" then
+    elseif type(callback) ~= "function" then
         return error("AddEventHandler requires a function for the second arg")
     end
 
@@ -17,6 +15,10 @@ function AddEventHandler(eventName, callback)
 end
 
 function TriggerEvent(eventName, ...)
+    if type(eventName) ~= "string" then
+        return error("TriggerEvent requires string for first arg")
+    end
+
     if not eventHandlers[eventName] then
         return
     end
@@ -30,14 +32,36 @@ Exports = {}
 
 setmetatable(Exports, {
     __index = function(self, resourceName)
-        return exports[resourceName]
+        if type(resourceName) ~= "string" then
+            return error("Exports must be indexed with a string value")
+        end
+
+        if not exports[resourceName] then
+            return {}
+        end
+        
+        return setmetatable({}, {
+            __index = function(self, exportName)
+                if type(exportName) ~= "string" then
+                    return error("Exports methods must be indexed with a string value")
+                end
+
+                return exports[resourceName][exportName]
+            end
+        })
     end,
 
-    __call = function(self, fnName, fn)
+    __call = function(self, exportName, fn)
+        if type(exportName) ~= "string" then
+            return error("Export definition requires string as the first argument")
+        elseif type(fn) ~= "function" then
+            return error("Export definition requires function as the second argument")
+        end
+
         local resourceName = getfenv(2)._RESOURCE
 
         exports[resourceName] = exports[resourceName] or {}
-        exports[resourceName][fnName] = fn
+        exports[resourceName][exportName] = fn
     end
 })
 
@@ -194,10 +218,16 @@ function LoadData(resourceName, filePath)
     return json.decode(content)
 end
 
-local initResources = json.decode(readFile(("resources.json")))
+local initResourceFilePath = "resources.json"
+
+if not fileExists(initResourceFilePath) then
+    return error("resources.json is not present in root directory")
+end
+
+local initResources = json.decode(readFile(initResourceFilePath))
 
 if type(initResources) ~= "table" then
-    return
+    return error("failed to parse resources.json file")
 end
 
 for _,resourceDef in ipairs(initResources) do
