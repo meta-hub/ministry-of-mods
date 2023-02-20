@@ -1,4 +1,3 @@
-local Locales = LoadResource("locales")
-
-print(Exports.locales._T("player_connected"))
-print(Locales.Translate("player_connected"))
+AddEventHandler("world:setWeather", function(weatherType)
+    world.weather = weatherType
+end)

@@ -1,5 +1,8 @@
 [
     {
+        "name": "locales"
+    },
+    {
         "name": "world"
     }
 ]
