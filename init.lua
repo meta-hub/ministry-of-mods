@@ -109,7 +109,25 @@ local function loadScript(code, filePath, environment, ...)
     return ret
 end
 
+local loadedResources = {}
+
+local function handleReturn(resourceName, options, globalTable)
+    if not next(globalTable) then
+        return nil
+    end
+
+    if options.injectGlobal then
+        getfenv(2)[resourceName] = globalTable
+    else
+        return globalTable
+    end
+end
+
 function LoadResource(resourceName, options)
+    if loadedResources[resourceName] then
+        return handleReturn(resourceName, options, loadedResources[resourceName])
+    end
+
     options = options or {}
 
     local versionPath = options.version and ("/" .. options.version) or ""
@@ -125,9 +143,8 @@ function LoadResource(resourceName, options)
     
     if not resourceDef then
         return error("resource has invalid resource.json entry file: " .. resourceName)
-    end    
+    end
 
-    local alias = options.injectionAlias or resourceName
     local env = options.env or createEnvironment(resourceName, options.version or "default")
 
     local globalTable = {}
@@ -160,15 +177,9 @@ function LoadResource(resourceName, options)
         end
     end
 
-    if not next(globalTable) then
-        return nil
-    end
+    loadedResources[resourceName] = globalTable
 
-    if options.injectGlobal then
-        _G[alias] = globalTable
-    else
-        return globalTable
-    end
+    handleReturn(resourceName, options, globalTable)
 end
 
 function LoadData(resourceName, filePath)
