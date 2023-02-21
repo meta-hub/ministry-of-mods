@@ -3,19 +3,17 @@ local Lang = LoadResource("locales").Fetch()
 local PlayersTable = {}
 
 local PlayerGender = {
-    [0] = {Lang.sex_a, 0},
-    [1] = {Lang.sex_a, 0},
-    [2] = {Lang.sex_f, 0},
-    [3] = {Lang.sex_m, 0},
+    [0] = {Lang.gen_m, 0},
+    [1] = {Lang.gen_f, 0},
+    [2] = {Lang.gen_u, 0},
 }
 
 local PlayerHouse = {
-    [0] = {Lang.house_u, 0},
-    [1] = {Lang.house_g, 0},
-    [2] = {Lang.house_h, 0},
-    [3] = {Lang.house_r, 0},
-    [4] = {Lang.house_s, 0},
-    [5] = {Lang.house_u, 0},
+    [0] = {Lang.house_g, 0},
+    [1] = {Lang.house_h, 0},
+    [2] = {Lang.house_r, 0},
+    [3] = {Lang.house_s, 0},
+    [4] = {Lang.house_u, 0},
 }
 
 -- ConnectToEvents
