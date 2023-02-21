@@ -31,7 +31,7 @@ function Track(Player, Joined)
         PlayerHouse[Player.gender][2] = PlayerHouse[Player.gender][2] + 1
         PlayerHouse[Player.house][2] = PlayerHouse[Player.house][2] + 1
         if Config.Settings.PrintJoin then
-            print(string.format(Lang("player_joining"), Player.id))
+            print(Lang("player_joining"):format(Player.id))
         end
     else
         for i,v in pairs(PlayerIdTable) do
@@ -40,14 +40,14 @@ function Track(Player, Joined)
                 PlayerHouse[Player.gender][2] = PlayerHouse[Player.gender][2] - 1
                 PlayerHouse[Player.house][2] = PlayerHouse[Player.house][2] - 1
                 if Config.Settings.PrintLeave then
-                    print(string.format(Lang("player_leaveing"), Player.id))
+                    print(Lang("player_leaveing"):format(Player.id))
                 end
             end
         end
     end
 
     if Config.Settings.PrintPlayerCount then
-        print(string.format(Lang("current_players"), #PlayersTable))
+        print(Lang("current_players"):format(#PlayersTable))
     end
     if Config.Settings.PrintGenderCount then
         print(Lang("gender_count"))
