@@ -1,4 +1,4 @@
-local json = require("json")
+json = require("json")
 
 local eventHandlers = {}
 local exports = {}
@@ -39,7 +39,7 @@ setmetatable(Exports, {
         if not exports[resourceName] then
             return {}
         end
-        
+
         return setmetatable({}, {
             __index = function(self, exportName)
                 if type(exportName) ~= "string" then
@@ -72,7 +72,7 @@ local function createEnvironment(resourceName, version)
         _RESOURCE = resourceName,
         _VERSION = version
     }
-    
+
     env._G = _G
     env._ENV = setmetatable(env, {
         __index = function(self, k)
@@ -109,11 +109,11 @@ local function readFile(path)
     local code = file:read("*a")
 
     file:close()
-    
+
     return code
 end
 
-local function loadScript(code, filePath, environment, ...)    
+local function loadScript(code, filePath, environment, ...)
     local _,fn,err = pcall(load, code, filePath, 'bt', environment)
 
     if err then
@@ -166,7 +166,7 @@ function LoadResource(resourceName, options)
 
     local entryFileContent = readFile(entryFilePath)
     local resourceDef = json.decode(entryFileContent)
-    
+
     if not resourceDef then
         return error("resource has invalid resource.json entry file: " .. resourceName)
     end
@@ -216,7 +216,7 @@ function LoadData(resourceName, filePath)
     end
 
     local content = readFile(path)
-    
+
     return json.decode(content)
 end
 
