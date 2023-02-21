@@ -52,14 +52,10 @@ function Track(Player, Joined)
     end
     if Config.Settings.PrintGenderCount then
         print("Gender Count:")
-        for i,v in pairs(PlayerGender) do
-            print(v[1] .. ": " .. v[2])
-        end
+        print(json.encode(PlayerGender))
     end
     if Config.Settings.PrintHouseCount then
         print("House Count:")
-        for i,v in pairs(PlayerHouse) do
-            print(v[1] .. ": " .. v[2])
-        end
+        print(json.encode(PlayerGender))
     end
 end
