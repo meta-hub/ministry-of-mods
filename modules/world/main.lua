@@ -83,12 +83,12 @@ function Initiate()
         end
     end
     if Config.Settings.UseOSTime then
-        WorldData["hour"] = os.time("%H")
-        WorldData["minute"] = os.time("%M")
-        WorldData["second"] = os.time("%S")
-        WorldData["year"] = os.time("%Y")
-        WorldData["month"] = os.time("%m")
-        WorldData["day"] = os.time("%d")
+        WorldData["hour"] = tonumber(os.date("%H"))
+        WorldData["minute"] = tonumber(os.date("%M"))
+        WorldData["second"] = tonumber(os.date("%S"))
+        WorldData["year"] = tonumber(os.date("%Y"))
+        WorldData["month"] = tonumber(os.date("%m"))
+        WorldData["day"] = tonumber(os.date("%d"))
 
         WorldData["season"] = Config.SeasonTable[WorldData["month"]]
 
