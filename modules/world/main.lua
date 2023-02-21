@@ -105,31 +105,40 @@ function Update(Delta)
     WeatherTick = WeatherTick + Delta
 
     if not FreezeTime then
-        WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
+        if Config.Settings.UseOSTime then
+            WorldData["hour"] = tonumber(os.date("%H"))
+            WorldData["minute"] = tonumber(os.date("%M"))
+            WorldData["second"] = tonumber(os.date("%S"))
+            WorldData["year"] = tonumber(os.date("%Y"))
+            WorldData["month"] = tonumber(os.date("%m"))
+            WorldData["day"] = tonumber(os.date("%d"))
+        else
+            WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
 
-        if SecondTick > 1 then
-            SecondTick = SecondTick - 1
-            WorldData["second"] = WorldData["second"] + 1
-        end
-        if WorldData["second"] > 59 then
-            WorldData["second"] = WorldData["second"] - 59
-            WorldData["minute"] = WorldData["minute"] + 1
-        end
-        if WorldData["minute"] > 59 then
-            WorldData["minute"] = WorldData["minute"] - 59
-            WorldData["hour"] = WorldData["hour"] + 1
-        end
-        if WorldData["hour"] > 23 then
-            WorldData["hour"] = 0
-            WorldData["day"] = WorldData["day"] + 1
-        end
-        if WorldData["day"] > get_days_in_month(WorldData["month"], WorldData["year"]) then
-            WorldData["day"] = 1
-            WorldData["month"] = WorldData["month"] + 1
-        end
-        if WorldData["month"] > 12 then
-            WorldData["month"] = 1
-            WorldData["year"] = WorldData["year"] + 1
+            if SecondTick > 1 then
+                SecondTick = SecondTick - 1
+                WorldData["second"] = WorldData["second"] + 1
+            end
+            if WorldData["second"] > 59 then
+                WorldData["second"] = WorldData["second"] - 59
+                WorldData["minute"] = WorldData["minute"] + 1
+            end
+            if WorldData["minute"] > 59 then
+                WorldData["minute"] = WorldData["minute"] - 59
+                WorldData["hour"] = WorldData["hour"] + 1
+            end
+            if WorldData["hour"] > 23 then
+                WorldData["hour"] = 0
+                WorldData["day"] = WorldData["day"] + 1
+            end
+            if WorldData["day"] > get_days_in_month(WorldData["month"], WorldData["year"]) then
+                WorldData["day"] = 1
+                WorldData["month"] = WorldData["month"] + 1
+            end
+            if WorldData["month"] > 12 then
+                WorldData["month"] = 1
+                WorldData["year"] = WorldData["year"] + 1
+            end
         end
     end
 
