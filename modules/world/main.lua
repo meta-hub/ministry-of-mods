@@ -130,14 +130,14 @@ function Update(Delta)
             WorldData["season"] = 3
         end
 
-        if WeatherTick >= Config.Settings.RandomWeatherTimer then
-            WeatherTick = 0
+        if WeatherTick > Config.Settings.RandomWeatherTimer then
+            WeatherTick = WeatherTick - Config.Settings.RandomWeatherTimer
             NewWeather()
         end
     end
 
-    if SyncTick >= Config.Settings.SyncTimer then
-        SyncTick = 0
+    if SyncTick > Config.Settings.SyncTimer then
+        SyncTick = SyncTick - Config.Settings.SyncTimer
         WorldSync()
     end
 end
