@@ -91,10 +91,7 @@ function Initiate()
         WorldData["day"] = tonumber(os.date("%d"))
 
         WorldData["season"] = Config.SeasonTable[WorldData["month"]]
-
-        local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData["month"]]]
-        local getWeather = Config.WeatherTypes[math.random(1,#Config.Seasons[getSeason])]
-        WorldData["weather"] = Config.WeatherTypes[genWeather]
+        NewWeather()
     end
     WorldSync()
 end
