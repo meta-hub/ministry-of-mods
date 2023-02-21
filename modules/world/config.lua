@@ -2,6 +2,7 @@ Config = {}
 
 Config.Settings = {
     PrintWorldSync = true, -- If you want to print the sync notification (H:M:S - D:M:Y)
+    UseOSTime = true,
     FreezeTime = false, -- Forces the Time & Date to stay at the values below
     FreezeWeather = false, -- Forces the Weather to stay at the values below
     SyncTimer = 30, -- How long before before the server forces a sync (Seconds)
@@ -40,6 +41,8 @@ Config.SeasonTypes = {
     [3] = "Fall",
     [4] = "Spring",
 }
+
+Config.SeasonTable = {2,2,4,4,4,1,1,1,3,3,3,2}
 
 Config.WeatherTypes = {
     [1] = "Announce",
