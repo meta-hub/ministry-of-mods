@@ -1,20 +1,19 @@
-local Config = require("config")
-local Locales = LoadResource("locales")
+local Lang = LoadResource("locales").Translate
 
 local PlayersTable = {}
 
 local PlayerGender = {
-    [1] = {"Agender", 0},
-    [2] = {"Female", 0},
-    [3] = {"Male", 0},
+    [1] = {Lang("sex_a"), 0},
+    [2] = {Lang("sex_f"), 0},
+    [3] = {Lang("sex_m"), 0},
 }
 
 local PlayerHouse = {
-    [1] = {"Gryffindor", 0},
-    [2] = {"Hufflepuff", 0},
-    [3] = {"Ravenclaw", 0},
-    [4] = {"Slytherin", 0},
-    [5] = {"Unaffiliated", 0},
+    [1] = {Lang("house_g"), 0},
+    [2] = {Lang("house_h"), 0},
+    [3] = {Lang("house_r"), 0},
+    [4] = {Lang("house_s"), 0},
+    [5] = {Lang("house_u"), 0},
 }
 
 -- ConnectToEvents
@@ -32,7 +31,7 @@ function Track(Player, Joined)
         PlayerHouse[Player.gender][2] = PlayerHouse[Player.gender][2] + 1
         PlayerHouse[Player.house][2] = PlayerHouse[Player.house][2] + 1
         if Config.Settings.PrintJoin then
-            Print(Player.id .. " | has joined")
+            print(string.format(Lang("player_joining"), Player.id))
         end
     else
         for i,v in pairs(PlayerIdTable) do
@@ -41,21 +40,21 @@ function Track(Player, Joined)
                 PlayerHouse[Player.gender][2] = PlayerHouse[Player.gender][2] - 1
                 PlayerHouse[Player.house][2] = PlayerHouse[Player.house][2] - 1
                 if Config.Settings.PrintLeave then
-                    Print(Player.id .. " | has left")
+                    print(string.format(Lang("player_leaveing"), Player.id))
                 end
             end
         end
     end
 
     if Config.Settings.PrintPlayerCount then
-        print("There are " .. #PlayersTable .. " players connected")
+        print(string.format(Lang("current_players"), #PlayersTable))
     end
     if Config.Settings.PrintGenderCount then
-        print("Gender Count:")
+        print(Lang("gender_count"))
         print(json.encode(PlayerGender))
     end
     if Config.Settings.PrintHouseCount then
-        print("House Count:")
+        print(Lang("house_count"))
         print(json.encode(PlayerGender))
     end
 end

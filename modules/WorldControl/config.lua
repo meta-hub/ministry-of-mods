@@ -1,7 +1,7 @@
 Config = {}
 
 Config.Settings = {
-    PrintSyncWorld = true, -- If you want to print the sync notification (H:M:S - D:M:Y)
+    PrintWorldSync = true, -- If you want to print the sync notification (H:M:S - D:M:Y)
     FreezeTime = false, -- Forces the Time & Date to stay at the values below
     FreezeWeather = false, -- Forces the Weather to stay at the values below
     SyncTimer = 30, -- How long before before the server forces a sync (Seconds)

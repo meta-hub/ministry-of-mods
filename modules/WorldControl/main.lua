@@ -1,5 +1,4 @@
-local Config = require("config")
-local Locales = LoadResource("locales")
+local Lang = LoadResource("locales").Translate
 
 local SyncTick = 0
 local WeatherTick = 0
@@ -154,9 +153,10 @@ function WorldSync()
         world[i] = v
     end
     world:RpcSet()
-    if Config.Settings.PrintSyncWorld then
-        local TimeFormat = WorldData["hour"] ..":" .. WorldData["minute"] .. ":" .. WorldData["second"]
-        local DateFormat = WorldData["day"] .. "/" .. WorldData["month"]  .. "/" .. WorldData["year"]
-        print("Sync World: " .. TimeFormat .. " - " .. DateFormat )
+    if Config.Settings.PrintWorldSync then
+        local xh,xmi,xs,xd,xmo,xy = WorldData["hour"], WorldData["minute"], WorldData["second"], WorldData["day"], WorldData["month"], WorldData["year"]
+        local TimeFormat = xh .. ":" .. xmi .. ":" xs
+        local DateFormat = xd .. "/" .. xmo .. "/" xy
+        print(Lang("world_sync") .. TimeFormat .. " - " .. DateFormat )
     end
 end
