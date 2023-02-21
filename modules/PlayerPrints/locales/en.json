@@ -3,5 +3,13 @@
     "player_joining": "%i | has joined",
     "player_leaveing": "%i | has left",
     "gender_count": "Gender Count: ",
-    "house_count": "House Count: "
+    "house_count": "House Count: ",
+    "sex_a": "Agender",
+    "sex_f": "Female",
+    "sex_m": "Male",
+    "house_g": "Gryffindor",
+    "house_h": "Hufflepuff",
+    "house_r": "Ravenclaw",
+    "house_s": "Slytherin",
+    "house_u": "Unaffiliated"
 }
