@@ -36,9 +36,9 @@ function Track(Player, Joined)
             print(string.format(Lang.player_joining, Player.id))
         end
     else
-        for i,v in pairs(PlayerIdTable) do
+        for i,v in pairs(PlayersTable) do
             if v == Player.id then
-                table.remove(PlayerIdTable, i)
+                table.remove(PlayersTable, i)
                 PlayerGender[Player.gender][2] = PlayerGender[Player.gender][2] - 1
                 PlayerHouse[Player.house][2] = PlayerHouse[Player.house][2] - 1
                 if Config.Settings.PrintLeave then
