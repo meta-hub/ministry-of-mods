@@ -53,10 +53,10 @@ function Track(Player, Joined)
     end
     if Config.Settings.PrintGenderCount then
         print(Lang.gender_count)
-        print(json.encode(PlayerGender))
+        print(json.encode(PlayerGender, { indent = true }))
     end
     if Config.Settings.PrintHouseCount then
         print(Lang.house_count)
-        print(json.encode(PlayerGender))
+        print(json.encode(PlayerGender, { indent = true }))
     end
 end
