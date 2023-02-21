@@ -57,6 +57,6 @@ function Track(Player, Joined)
     end
     if Config.Settings.PrintHouseCount then
         print(Lang.house_count)
-        print(json.encode(PlayerGender, { indent = true }))
+        print(json.encode(PlayerHouse, { indent = true }))
     end
 end
