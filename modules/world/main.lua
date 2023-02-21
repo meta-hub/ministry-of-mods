@@ -89,8 +89,13 @@ function Update(Delta)
     WeatherTick = WeatherTick + Delta
 
     if not Config.Settings.FreezeTime then
+        WorldData["second"] = WorldData["second"] + Delta
         WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
 
+        if WorldData["second"] > 59 then
+            WorldData["second"] = WorldData["second"] - 59
+            WorldData["minute"] = WorldData["minute"] + 1
+        end
         if WorldData["minute"] > 59 then
             WorldData["minute"] = WorldData["minute"] - 59
             WorldData["hour"] = WorldData["hour"] + 1
