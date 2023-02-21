@@ -7,7 +7,7 @@ Config.Settings = {
     SyncTimer = 30, -- How long before before the server forces a sync (Seconds)
     RandomWeatherTimer = 1200, -- How long before the server changes the weather (Seconds)
     MinutesPerSecond = 5, -- Every second adds the given number to minutes
-},
+}
 
 Config.Time = { -- False values ignore the variable/setting (meaning it doesn't set anything)
     hour = false, -- Must be between 1 & 23
