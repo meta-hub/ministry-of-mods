@@ -16,7 +16,9 @@ For those who need to control weather outside of this resource, use
     local ExampleTable = {
         hour = 12,
         minute = 43,
+        --second = 12,
         day = 24,
+        --month = 4,
         year = 1000
     }
     TriggerEvent('mom:world:SetWorldData', ExampleTable)
@@ -26,6 +28,4 @@ For those who need to control weather outside of this resource, use
     -- EXAMPLE: If FreezeTime is on and you execute the trigger below, it will turn it off and vice versa. Same applies to Freeze Weather. Can include a BOOL to force a state.
     TriggerEvent('mom:world:FreezeTime', false) -- Forces the time to unfreeze
     TriggerEvent('mom:world:FreezeWeather') -- Forces the weather to freeze
-
-
 ```
