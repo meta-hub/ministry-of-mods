@@ -1,0 +1,7 @@
+{
+    "current_players": "There are %i players connected",
+    "player_joining": "%i | has joined",
+    "player_leaveing": "%i | has left",
+    "gender_count": "Gender Count: ",
+    "house_count": "House Count: "
+}

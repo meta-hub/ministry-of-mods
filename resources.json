@@ -3,6 +3,9 @@
         "name": "locales"
     },
     {
-        "name": "world"
+        "name": "WorldControl"
+    },
+    {
+        "name": "PlayerPrints"
     }
 ]
