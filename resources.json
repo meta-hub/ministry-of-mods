@@ -4,5 +4,8 @@
     },
     {
         "name": "world"
+    },
+    {
+        "name": "player"
     }
 ]
