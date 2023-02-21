@@ -1,8 +1,7 @@
 local Lang = LoadResource("locales").Fetch()
 
-local SyncTick = 0
-local WeatherTick = 0
-local SecondTick = 0
+local SyncTick, WeatherTick, SecondTick = 0, 0, 0
+local FreezeTime, FreezeWeather = Config.Settings.FreezeTime, Config.Settings.FreezeWeather
 local WorldData = {}
 
 -- ConnectToEvents
@@ -90,7 +89,7 @@ function Update(Delta)
     SyncTick = SyncTick + Delta
     WeatherTick = WeatherTick + Delta
 
-    if not Config.Settings.FreezeTime then
+    if not FreezeTime then
         WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
 
         if SecondTick > 1 then
@@ -119,7 +118,7 @@ function Update(Delta)
         end
     end
 
-    if not Config.Settings.FreezeWeather then
+    if not FreezeWeather then
         if WorldData["month"] == 12 or WorldData["month"] == 1 or WorldData["month"] == 2 then
             WorldData["season"] = 2
         elseif WorldData["month"] == 3 or WorldData["month"] == 4 or WorldData["month"] == 5 then
@@ -169,3 +168,34 @@ function WorldSync()
         print(Lang.world_sync .. TimeFormat .. " - " .. DateFormat )
     end
 end
+
+-- Add options for external control
+AddEventHandler('MOM-world:SetWorldData', function(DataTable)
+    if type(DataTable) == "table" then
+        for i,v in pairs(Data) do
+            if Config.Time[i] or Config.Weather[i] then
+                WorldData[i] = v
+            end
+        end
+    end
+end)
+
+AddEventHandler('MOM-world:SyncWorldData', function()
+    WorldSync()
+end)
+
+AddEventHandler('MOM-world:FreezeTime', function()
+    if FreezeTime then
+        FreezeTime = false
+    else
+        FreezeTime = true
+    end
+end)
+
+AddEventHandler('MOM-world:FreezeWeather', function()
+    if FreezeWeather then
+        FreezeWeather = false
+    else
+        FreezeWeather = true
+    end
+end)
