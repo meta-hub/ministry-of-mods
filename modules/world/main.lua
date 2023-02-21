@@ -113,11 +113,10 @@ function Update(Delta)
             WorldData["month"] = tonumber(os.date("%m"))
             WorldData["day"] = tonumber(os.date("%d"))
         else
-            WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
-
             if SecondTick > 1 then
                 SecondTick = SecondTick - 1
                 WorldData["second"] = WorldData["second"] + 1
+                WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
             end
             if WorldData["second"] > 59 then
                 WorldData["second"] = WorldData["second"] - 59
@@ -177,7 +176,7 @@ function WorldSync()
 end
 
 -- Add options for external control
-AddEventHandler('MOM-world:SetWorldData', function(DataTable)
+AddEventHandler('mom:world:SetWorldData', function(DataTable)
     if type(DataTable) == "table" then
         for i,v in pairs(Data) do
             if Config.Time[i] or Config.Weather[i] then
@@ -187,22 +186,30 @@ AddEventHandler('MOM-world:SetWorldData', function(DataTable)
     end
 end)
 
-AddEventHandler('MOM-world:SyncWorldData', function()
+AddEventHandler('mom:world:SyncWorldData', function()
     WorldSync()
 end)
 
-AddEventHandler('MOM-world:FreezeTime', function()
-    if FreezeTime then
-        FreezeTime = false
+AddEventHandler('mom:world:FreezeTime', function(State)
+    if State then
+        FreezeTime = State
     else
-        FreezeTime = true
+        if FreezeTime then
+            FreezeTime = false
+        else
+            FreezeTime = true
+        end
     end
 end)
 
-AddEventHandler('MOM-world:FreezeWeather', function()
-    if FreezeWeather then
-        FreezeWeather = false
+AddEventHandler('mom:world:FreezeWeather', function(State)
+    if State then
+        FreezeWeather = State
     else
-        FreezeWeather = true
+        if FreezeWeather then
+            FreezeWeather = false
+        else
+            FreezeWeather = true
+        end
     end
 end)
