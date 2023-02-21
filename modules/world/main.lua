@@ -95,7 +95,7 @@ function Update(Delta)
 
         if SecondTick > 1 then
             SecondTick = SecondTick - 1
-            WorldData["second"] = SecondTick + 1
+            WorldData["second"] = WorldData["second"] + 1
         end
         if WorldData["second"] > 59 then
             WorldData["second"] = WorldData["second"] - 59
