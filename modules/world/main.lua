@@ -1,5 +1,4 @@
 local Lang = LoadResource("locales").Fetch()
-local worldSyncLabel = Lang.world_sync
 
 local SyncTick = 0
 local WeatherTick = 0
@@ -157,6 +156,6 @@ function WorldSync()
         local xh,xmi,xs,xd,xmo,xy = WorldData["hour"], WorldData["minute"], WorldData["second"], WorldData["day"], WorldData["month"], WorldData["year"]
         local TimeFormat = xh .. ":" .. xmi .. ":" .. xs
         local DateFormat = xd .. "/" .. xmo .. "/" .. xy
-        print(worldSyncLabel .. TimeFormat .. " - " .. DateFormat )
+        print(Lang.world_sync .. TimeFormat .. " - " .. DateFormat )
     end
 end
