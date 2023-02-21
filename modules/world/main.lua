@@ -9,7 +9,7 @@ registerForEvent("init", function()
     Initiate()
 end)
 registerForEvent("update", function(DeltaTime)
-    Update()
+    Update(DeltaTime)
 end)
 
 -- Functions
@@ -17,9 +17,9 @@ function get_days_in_month(month, year)
     local days_in_month = {31,28,31,30,31,30,31,31,30,31,30,31}
     local d = days_in_month[month]
     if (month == 2) then
-        if (math.mod(year,4) == 0) then
-            if (math.mod(year,100) == 0)then
-                if (math.mod(year,400) == 0) then
+        if (year % 4 == 0) then
+            if (year % 100 == 0)then
+                if (year % 400 == 0) then
                     d = 29
                 end
             else
@@ -92,15 +92,14 @@ function Update(Delta)
         WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
 
         if WorldData["minute"] > 59 then
-            math = WorldData["minute"] - 59
-            WorldData["minute"] = math
+            WorldData["minute"] = WorldData["minute"] - 59
             WorldData["hour"] = WorldData["hour"] + 1
         end
         if WorldData["hour"] > 23 then
             WorldData["hour"] = 0
             WorldData["day"] = WorldData["day"] + 1
         end
-        if WorldData["day"] > get_days_in_month(WorldData["day"], WorldData["year"]) then
+        if WorldData["day"] > get_days_in_month(WorldData["month"], WorldData["year"]) then
             WorldData["day"] = 1
             WorldData["month"] = WorldData["month"] + 1
         end
@@ -121,15 +120,15 @@ function Update(Delta)
             WorldData["season"] = 3
         end
 
-        if WeatherTick >= Config.Settings.WeatherTick then
+        if WeatherTick >= Config.Settings.RandomWeatherTimer then
             WeatherTick = 0
-            newWeather()
+            NewWeather()
         end
     end
 
     if SyncTick >= Config.Settings.SyncTimer then
         SyncTick = 0
-        SyncWorld()
+        WorldSync()
     end
 end
 
@@ -155,8 +154,8 @@ function WorldSync()
     world:RpcSet()
     if Config.Settings.PrintWorldSync then
         local xh,xmi,xs,xd,xmo,xy = WorldData["hour"], WorldData["minute"], WorldData["second"], WorldData["day"], WorldData["month"], WorldData["year"]
-        local TimeFormat = xh .. ":" .. xmi .. ":" xs
-        local DateFormat = xd .. "/" .. xmo .. "/" xy
+        local TimeFormat = xh .. ":" .. xmi .. ":" .. xs
+        local DateFormat = xd .. "/" .. xmo .. "/" .. xy
         print(Lang("world_sync") .. TimeFormat .. " - " .. DateFormat )
     end
 end
