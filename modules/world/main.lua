@@ -2,6 +2,7 @@ local Lang = LoadResource("locales").Fetch()
 
 local SyncTick = 0
 local WeatherTick = 0
+local SecondTick = 0
 local WorldData = {}
 
 -- ConnectToEvents
@@ -85,13 +86,17 @@ function Initiate()
 end
 
 function Update(Delta)
+    SecondTick = SecondTick + Delta
     SyncTick = SyncTick + Delta
     WeatherTick = WeatherTick + Delta
 
     if not Config.Settings.FreezeTime then
-        WorldData["second"] = WorldData["second"] + Delta
         WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
 
+        if SecondTick > 1 then
+            SecondTick = SecondTick - 1
+            WorldData["second"] = SecondTick + 1
+        end
         if WorldData["second"] > 59 then
             WorldData["second"] = WorldData["second"] - 59
             WorldData["minute"] = WorldData["minute"] + 1
