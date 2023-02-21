@@ -19,7 +19,9 @@ For those who need to control weather outside of this resource, use
         --second = 12,
         day = 24,
         --month = 4,
-        year = 1000
+        year = 1000,
+        --season = 1,
+        --weather = "Astronomy"
     }
     TriggerEvent('mom:world:SetWorldData', ExampleTable)
 
