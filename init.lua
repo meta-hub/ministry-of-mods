@@ -150,8 +150,10 @@ end
 function LoadResource(resourceName, options)
     options = options or {}
 
-    if loadedResources[resourceName] then
-        return handleReturn(resourceName, options, loadedResources[resourceName])
+    local version = options.version or "root"
+
+    if loadedResources[resourceName] and loadedResources[resourceName][version] then
+        return handleReturn(resourceName, options, loadedResources[resourceName][version])
     end
 
     options = options or {}
@@ -203,7 +205,8 @@ function LoadResource(resourceName, options)
         end
     end
 
-    loadedResources[resourceName] = globalTable
+    loadedResources[resourceName] = loadedResources[resourceName] or {}
+    loadedResources[resourceName][version] = globalTable
 
     handleReturn(resourceName, options, globalTable)
 end
