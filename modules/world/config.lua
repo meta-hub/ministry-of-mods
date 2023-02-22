@@ -1,7 +1,8 @@
 Config = {}
 
+Config.DiscordLogs = true
+
 Config.Settings = {
-    PrintWorldSync = true, -- If you want to print the sync notification (H:M:S - D:M:Y)
     UseOSTime = true, -- if you want to use OS time
     FreezeTime = false, -- Forces the Time & Date to stay at the values below
     FreezeWeather = false, -- Forces the Weather to stay at the values below
