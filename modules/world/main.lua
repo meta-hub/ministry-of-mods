@@ -1,7 +1,7 @@
 local Lang = LoadResource("locales").Fetch()
 
-local SyncTick = 0
-local WeatherTick = 0
+local SyncTick, WeatherTick, SecondTick = 0, 0, 0
+local FreezeTime, FreezeWeather = Config.Settings.FreezeTime, Config.Settings.FreezeWeather
 local WorldData = {}
 
 -- ConnectToEvents
@@ -31,37 +31,48 @@ function get_days_in_month(month, year)
 end
 
 function Initiate()
+    -- Set primary information to WorldData table
+    WorldData["hour"] = world.hour
+    WorldData["minute"] = world.minute
+    WorldData["second"] = world.second
+    WorldData["year"] = world.year
+    WorldData["month"] = world.month
+    WorldData["day"] = world.day
+    WorldData["season"] = world.season
+    WorldData["weather"] = world.weather
+
+    ---
     if type(Config.Time.hour) == "number" then
         if Config.Time.hour >= 0 and Config.Time.hour <= 23 then
-            WorldData["hour"] = Config.Time.hour
+            WorldData["hour"] = math.floor(Config.Time.hour)
         end
     end
     if type(Config.Time.minute) == "number" then
         if Config.Time.minute >= 0 and Config.Time.minute <= 59 then
-            WorldData["minute"] = Config.Time.minute
+            WorldData["minute"] = math.floor(Config.Time.minute)
         end
     end
     if type(Config.Time.second) == "number" then
         if Config.Time.second >= 0 and Config.Time.second <= 59 then
-            WorldData["second"] = Config.Time.second
+            WorldData["second"] = math.floor(Config.Time.second)
         end
     end
     if type(Config.Time.year) == "number" then
-        WorldData["year"] = Config.Time.year
+        WorldData["year"] = math.floor(Config.Time.year)
     end
     if type(Config.Time.month) == "number" then
         if Config.Time.month >= 1 and Config.Time.month <= 12 then
-            WorldData["month"] = Config.Time.month
+            WorldData["month"] = math.floor(Config.Time.month)
         end
     end
     if type(Config.Time.day) == "number" then
         if Config.Time.day >= 1 and Config.Time.day <= 31 then
-            WorldData["day"] = Config.Time.day
+            WorldData["day"] = math.floor(Config.Time.day)
         end
     end
     if type(Config.Weather.season) == "number" then
         if Config.SeasonTypes[Config.Weather.season] then
-            WorldData["season"] = Config.Weather.season
+            WorldData["season"] = math.floor(Config.Weather.season)
         end
     end
     if type(Config.Weather.weather) == "string" then
@@ -71,78 +82,79 @@ function Initiate()
             end
         end
     end
-    if #WorldData == 0 then
-        WorldData["hour"] = world.hour
-        WorldData["minute"] = world.minute
-        WorldData["second"] = world.second
-        WorldData["year"] = world.year
-        WorldData["month"] = world.month
-        WorldData["day"] = world.day
-        WorldData["season"] = world.season
-        WorldData["weather"] = world.weather
+    if Config.Settings.UseOSTime then
+        WorldData["hour"] = tonumber(os.date("%H"))
+        WorldData["minute"] = tonumber(os.date("%M"))
+        WorldData["second"] = tonumber(os.date("%S"))
+        WorldData["year"] = tonumber(os.date("%Y"))
+        WorldData["month"] = tonumber(os.date("%m"))
+        WorldData["day"] = tonumber(os.date("%d"))
+
+        WorldData["season"] = Config.SeasonTable[WorldData["month"]]
+        NewWeather()
     end
     WorldSync()
 end
 
 function Update(Delta)
+    SecondTick = SecondTick + Delta
     SyncTick = SyncTick + Delta
     WeatherTick = WeatherTick + Delta
 
-    if not Config.Settings.FreezeTime then
-        WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
-
-        if WorldData["minute"] > 59 then
-            WorldData["minute"] = WorldData["minute"] - 59
-            WorldData["hour"] = WorldData["hour"] + 1
-        end
-        if WorldData["hour"] > 23 then
-            WorldData["hour"] = 0
-            WorldData["day"] = WorldData["day"] + 1
-        end
-        if WorldData["day"] > get_days_in_month(WorldData["month"], WorldData["year"]) then
-            WorldData["day"] = 1
-            WorldData["month"] = WorldData["month"] + 1
-        end
-        if WorldData["month"] > 12 then
-            WorldData["month"] = 1
-            WorldData["year"] = WorldData["year"] + 1
+    if not FreezeTime then
+        if Config.Settings.UseOSTime then
+            WorldData["hour"] = tonumber(os.date("%H"))
+            WorldData["minute"] = tonumber(os.date("%M"))
+            WorldData["second"] = tonumber(os.date("%S"))
+            WorldData["year"] = tonumber(os.date("%Y"))
+            WorldData["month"] = tonumber(os.date("%m"))
+            WorldData["day"] = tonumber(os.date("%d"))
+        else
+            if SecondTick > 1 then
+                SecondTick = SecondTick - 1
+                WorldData["second"] = WorldData["second"] + 1
+                WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
+            end
+            if WorldData["second"] > 59 then
+                WorldData["second"] = WorldData["second"] - 59
+                WorldData["minute"] = WorldData["minute"] + 1
+            end
+            if WorldData["minute"] > 59 then
+                WorldData["minute"] = WorldData["minute"] - 59
+                WorldData["hour"] = WorldData["hour"] + 1
+            end
+            if WorldData["hour"] > 23 then
+                WorldData["hour"] = 0
+                WorldData["day"] = WorldData["day"] + 1
+            end
+            if WorldData["day"] > get_days_in_month(WorldData["month"], WorldData["year"]) then
+                WorldData["day"] = 1
+                WorldData["month"] = WorldData["month"] + 1
+            end
+            if WorldData["month"] > 12 then
+                WorldData["month"] = 1
+                WorldData["year"] = WorldData["year"] + 1
+            end
         end
     end
 
-    if not Config.Settings.FreezeWeather then
-        if WorldData["month"] == 12 or WorldData["month"] == 1 or WorldData["month"] == 2 then
-            WorldData["season"] = 2
-        elseif WorldData["month"] == 3 or WorldData["month"] == 4 or WorldData["month"] == 5 then
-            WorldData["season"] = 4
-        elseif WorldData["month"] == 6 or WorldData["month"] == 7 or WorldData["month"] == 8 then
-            WorldData["season"] = 1
-        elseif WorldData["month"] == 9 or WorldData["month"] == 10 or WorldData["month"] == 11 then
-            WorldData["season"] = 3
-        end
-
-        if WeatherTick >= Config.Settings.RandomWeatherTimer then
-            WeatherTick = 0
+    if not FreezeWeather then
+        WorldData["season"] = Config.SeasonTable[WorldData["month"]]
+        if WeatherTick > Config.Settings.RandomWeatherTimer then
+            WeatherTick = WeatherTick - Config.Settings.RandomWeatherTimer
             NewWeather()
         end
     end
 
-    if SyncTick >= Config.Settings.SyncTimer then
-        SyncTick = 0
+    if SyncTick > Config.Settings.SyncTimer then
+        SyncTick = SyncTick - Config.Settings.SyncTimer
         WorldSync()
     end
 end
 
 function NewWeather()
-    local genWeather = 0
-    if WorldData["month"] == 12 or WorldData["month"] == 1 or WorldData["month"] == 2 then
-        genWeather = Config.Seasons["Winter"][math.random(1,#Config.Seasons["Winter"])]
-    elseif WorldData["month"] == 3 or WorldData["month"] == 4 or WorldData["month"] == 5 then
-        genWeather = Config.Seasons["Spring"][math.random(1,#Config.Seasons["Spring"])]
-    elseif WorldData["month"] == 6 or WorldData["month"] == 7 or WorldData["month"] == 8 then
-        genWeather = Config.Seasons["Summer"][math.random(1,#Config.Seasons["Summer"])]
-    elseif WorldData["month"] == 9 or WorldData["month"] == 10 or WorldData["month"] == 11 then
-        genWeather = Config.Seasons["Fall"][math.random(1,#Config.Seasons["Fall"])]
-    end
+    local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData["month"]]]
+    local getWeather = Config.WeatherTypes[math.random(1,#Config.Seasons[getSeason])]
     WorldData["weather"] = Config.WeatherTypes[genWeather]
     WorldSync()
 end
@@ -159,3 +171,43 @@ function WorldSync()
         print(Lang.world_sync .. TimeFormat .. " - " .. DateFormat )
     end
 end
+
+-- Exports
+
+Exports("SetWorldData", function(DataTable)
+    if type(DataTable) == "table" then
+        for i,v in pairs(Data) do
+            if Config.Time[i] or Config.Weather[i] then
+                WorldData[i] = v
+            end
+        end
+    end
+end)
+
+Exports("SyncWorldData", function()
+    WorldSync()
+end)
+
+Exports("FreezeTime", function()
+    if State then
+        FreezeTime = State
+    else
+        if FreezeTime then
+            FreezeTime = false
+        else
+            FreezeTime = true
+        end
+    end
+end)
+
+Exports("FreezeWeather", function()
+    if State then
+        FreezeWeather = State
+    else
+        if FreezeWeather then
+            FreezeWeather = false
+        else
+            FreezeWeather = true
+        end
+    end
+end)
