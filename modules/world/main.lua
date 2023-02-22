@@ -172,8 +172,9 @@ function WorldSync()
     end
 end
 
--- Event Handlers
-AddEventHandler('mom:world:SetWorldData', function(DataTable)
+-- Exports
+
+Exports("SetWorldData", function(DataTable)
     if type(DataTable) == "table" then
         for i,v in pairs(Data) do
             if Config.Time[i] or Config.Weather[i] then
@@ -183,11 +184,11 @@ AddEventHandler('mom:world:SetWorldData', function(DataTable)
     end
 end)
 
-AddEventHandler('mom:world:SyncWorldData', function()
+Exports("SyncWorldData", function()
     WorldSync()
 end)
 
-AddEventHandler('mom:world:FreezeTime', function(State)
+Exports("FreezeTime", function()
     if State then
         FreezeTime = State
     else
@@ -199,7 +200,7 @@ AddEventHandler('mom:world:FreezeTime', function(State)
     end
 end)
 
-AddEventHandler('mom:world:FreezeWeather', function(State)
+Exports("FreezeWeather", function()
     if State then
         FreezeWeather = State
     else

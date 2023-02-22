@@ -23,11 +23,12 @@ For those who need to control weather outside of this resource, use
         --season = 1,
         --weather = "Astronomy"
     }
-    TriggerEvent('mom:world:SetWorldData', ExampleTable)
 
-    TriggerEvent('mom:world:SyncWorldData') -- Forces the world to sync between players
+    Exports.player.SetWorldData(ExampleTable)
+
+    Exports.player.SyncWorldData() -- Forces the world to sync between players
 
     -- EXAMPLE: If FreezeTime is on and you execute the trigger below, it will turn it off and vice versa. Same applies to Freeze Weather. Can include a BOOL to force a state.
-    TriggerEvent('mom:world:FreezeTime', false) -- Forces the time to unfreeze
-    TriggerEvent('mom:world:FreezeWeather') -- Forces the weather to freeze
+    Exports.player.FreezeTime() -- Forces the time to unfreeze
+    Exports.player.FreezeWeather() -- Forces the weather to freeze
 ```
