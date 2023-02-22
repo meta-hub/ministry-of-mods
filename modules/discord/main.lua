@@ -36,6 +36,4 @@ function LogToDiscord(name, title, color, message, tagEveryone)
 	end]]
 end
 
-Exports("LogToDiscord", function(name, title, color, message, tagEveryone)
-    LogToDiscord(name, title, color, message, tagEveryone)
-end)
+Exports("LogToDiscord", LogToDiscord)
