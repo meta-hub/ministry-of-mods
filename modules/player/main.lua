@@ -20,29 +20,21 @@ function Track(Player, Joined)
             gear = Player.gear,
             movement = Player.movement
         })
-        if Config.Settings.PrintJoin then
-            print(string.format(Lang.player_joining, Player.id))
+        if Config.DiscordLogs then
+            Exports.discord.LogToDiscord("player", Lang.player_join_title, {r = 165, g = 165, b = 165}, string.format(Lang.player_join_message, Player.id), false)
         end
     else
         for i,v in pairs(PlayersTable) do
             if v.id == Player.id then
                 table.remove(PlayersTable, i)
-                if Config.Settings.PrintLeave then
-                    print(string.format(Lang.player_leaveing, Player.id))
+                if Config.DiscordLogs then
+                    Exports.discord.LogToDiscord("player", Lang.player_left_title, {r = 165, g = 165, b = 165}, string.format(Lang.player_left_message, Player.id), false)
                 end
             end
         end
     end
-    if Config.Settings.PrintGenderCount then
-        print(Lang.gender_count)
-        print(json.encode(countGenders(), { indent = true }))
-    end
-    if Config.Settings.PrintHouseCount then
-        print(Lang.house_count)
-        print(json.encode(countHouses(), { indent = true }))
-    end
-    if Config.Settings.PrintPlayerCount then
-        print(string.format(Lang.current_players, countPlayers()))
+    if Config.DiscordLogs then
+        otherLogs()
     end
 end
 
@@ -74,6 +66,14 @@ function countHouses()
         end
     end
     return tempData
+end
+
+function otherLogs()
+    local message = Lang.current_players_title .. string.format(Lang.current_players_message, countPlayers()) .. "\n"
+        .. Lang.gender_count_title .. "\n```" .. json.encode(countGenders(), {indent = true}) .. "```\n"
+        .. Lang.house_count_title .. "\n```" .. json.encode(countHouses(), {indent = true}) .. "```"
+
+    Exports.discord.LogToDiscord("player", Lang.other_logs_title, {r = 165, g = 165, b = 165}, message, false)
 end
 
 -- Exports

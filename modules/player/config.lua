@@ -1,12 +1,6 @@
 Config = {}
 
-Config.Settings = {
-    PrintPlayerCount = true,
-    PrintGenderCount = true,
-    PrintHouseCount = true,
-    PrintJoin = true,
-    PrintLeave = true,
-}
+Config.DiscordLogs = true
 
 --[[
     Do not touch anything below unless you know what you are doing!
