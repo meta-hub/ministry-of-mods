@@ -172,7 +172,7 @@ function WorldSync()
     end
 end
 
--- Add options for external control
+-- Event Handlers
 AddEventHandler('mom:world:SetWorldData', function(DataTable)
     if type(DataTable) == "table" then
         for i,v in pairs(Data) do
