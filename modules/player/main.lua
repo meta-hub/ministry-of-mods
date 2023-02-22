@@ -2,6 +2,20 @@ local Lang = LoadResource("locales").Fetch()
 
 local PlayersTable = {}
 
+local PlayerGenders = {
+    [0] = Lang.gen_m,
+    [1] = Lang.gen_f,
+    [2] = Lang.gen_u,
+}
+
+local PlayerHouses = {
+    [0] = Lang.house_g,
+    [1] = Lang.house_h,
+    [2] = Lang.house_r,
+    [3] = Lang.house_s,
+    [4] = Lang.house_u,
+}
+
 -- ConnectToEvents
 registerForEvent("player_joined", function(Player)
     Track(Player, true)
@@ -45,7 +59,7 @@ end
 function countGenders()
     local tempData = {}
     for i,v in pairs(PlayersTable) do
-        local genderName = Config.PlayerGenders[v.gender]
+        local genderName = PlayerGenders[v.gender]
         if not tempData[genderName] then
             tempData[genderName] = 1
         else
@@ -58,7 +72,7 @@ end
 function countHouses()
     local tempData = {}
     for i,v in pairs(PlayersTable) do
-        local houseName = Config.PlayerHouses[v.house]
+        local houseName = PlayerHouses[v.house]
         if not tempData[houseName] then
             tempData[houseName] = 1
         else
