@@ -184,6 +184,7 @@ function WorldSync()
     end
 
     world:RpcSet()
+<<<<<<< HEAD
 
     if Config.Settings.PrintWorldSync then
         local xh,xmi,xs,xd,xmo,xy = WorldData["hour"], WorldData["minute"], WorldData["second"], WorldData["day"], WorldData["month"], WorldData["year"]
@@ -191,6 +192,10 @@ function WorldSync()
         local DateFormat = xd .. "/" .. xmo .. "/" .. xy
 
         print(Lang.world_sync .. TimeFormat .. " - " .. DateFormat )
+=======
+    if Config.DiscordLogs then
+        Exports.discord.LogToDiscord("world", Lang.world_sync_title, {r = 165, g = 165, b = 165}, Lang.world_sync_message, false)
+>>>>>>> 5c925f94767b5c2661309da2d40bf19b15723092
     end
 end
 

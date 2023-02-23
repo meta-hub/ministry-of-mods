@@ -1,3 +1,4 @@
 {
-    "world_sync": "World Synced: "
+    "world_sync_title": "World Synced",
+    "world_sync_message": "The world has been synced"
 }

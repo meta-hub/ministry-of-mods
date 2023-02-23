@@ -4,5 +4,8 @@
     },
     {
         "name": "player"
+    },
+    {
+        "name": "discord"
     }
 ]
