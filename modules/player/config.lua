@@ -1,3 +1,5 @@
+Lang = LoadResource("locales").Fetch()
+
 Config = {}
 
 Config.Settings = {

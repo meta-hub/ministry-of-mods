@@ -1,11 +1,10 @@
-local Lang = LoadResource("locales").Fetch()
-
 local PlayersTable = {}
 
 -- ConnectToEvents
 registerForEvent("player_joined", function(Player)
     Track(Player, true)
 end)
+
 registerForEvent("player_left", function(Player)
     Track(Player, false)
 end)
@@ -77,15 +76,6 @@ function countHouses()
 end
 
 -- Exports
-
-Exports("GetPlayerCount", function(str)
-    return countPlayers()
-end)
-
-Exports("GetPlayerGenders", function(str)
-    return countGenders()
-end)
-
-Exports("GetPlayerHouses", function(str)
-    return countHouses()
-end)
+Exports("GetPlayerCount", countPlayers)
+Exports("GetPlayerGenders", countGenders)
+Exports("GetPlayerHouses", countHouses)
