@@ -1,93 +1,8 @@
-json = require("json")
+require("./dependencies/json")
 
-local eventHandlers = {}
-local exports = {}
-
-function AddEventHandler(eventName, callback)
-    if type(eventName) ~= "string" then
-        return error("AddEventHandler requires string for first arg")
-    elseif type(callback) ~= "function" then
-        return error("AddEventHandler requires a function for the second arg")
-    end
-
-    eventHandlers[eventName] = eventHandlers[eventName] or {}
-    eventHandlers[eventName][#eventHandlers[eventName]+1] = callback
-end
-
-function TriggerEvent(eventName, ...)
-    if type(eventName) ~= "string" then
-        return error("TriggerEvent requires string for first arg")
-    end
-
-    if not eventHandlers[eventName] then
-        return
-    end
-
-    for _,fn in pairs(eventHandlers[eventName]) do
-        fn(...)
-    end
-end
-
-Exports = {}
-
-setmetatable(Exports, {
-    __index = function(self, resourceName)
-        if type(resourceName) ~= "string" then
-            return error("Exports must be indexed with a string value")
-        end
-
-        if not exports[resourceName] then
-            return {}
-        end
-
-        return setmetatable({}, {
-            __index = function(self, exportName)
-                if type(exportName) ~= "string" then
-                    return error("Exports methods must be indexed with a string value")
-                end
-
-                return exports[resourceName][exportName]
-            end
-        })
-    end,
-
-    __call = function(self, exportName, fn)
-        if type(exportName) ~= "string" then
-            return error("Export definition requires string as the first argument")
-        elseif type(fn) ~= "function" then
-            return error("Export definition requires function as the second argument")
-        end
-
-        local resourceName = getfenv(2)._RESOURCE
-
-        exports[resourceName] = exports[resourceName] or {}
-        exports[resourceName][exportName] = fn
-    end
-})
-
-local function createEnvironment(resourceName, version)
-    local env = {}
-
-    local gProt = {
-        _RESOURCE = resourceName,
-        _VERSION = version
-    }
-
-    env._G = _G
-    env._ENV = setmetatable(env, {
-        __index = function(self, k)
-            if gProt[k] == nil then
-                return _G[k]
-            end
-
-            return gProt[k]
-        end,
-
-        __newindex = gProt
-    })
-
-    return env
-end
+--
+-- File Validation
+--
 
 local function fileExists(path)
     local file = io.open(path, "r")
@@ -113,6 +28,82 @@ local function readFile(path)
     return code
 end
 
+--
+-- Exports
+--
+
+local exports = {}
+local exportsMt = {
+    __index = function(self, resourceName)
+        if type(resourceName) ~= "string" then
+            return error("Exports must be indexed with a string value")
+        end
+
+        if not exports[resourceName] then
+            return error(string.format("No exports defined for %s. Are you sure this resource has been started?"), resourceName)
+        end
+
+        return setmetatable({}, {
+            __index = function(self, exportName)
+                if type(exportName) ~= "string" then
+                    return error("Exports methods must be indexed with a string value")
+                end
+
+                return exports[resourceName][exportName]
+            end
+        })
+    end,
+
+    __call = function(self, exportName, fn)
+        if type(exportName) ~= "string" then
+            return error("Export definition requires string as the first argument")
+        elseif type(fn) ~= "function" then
+            return error("Export definition requires function as the second argument")
+        end
+
+        exports[self._RESOURCE] = exports[self._RESOURCE] or {}
+        exports[self._RESOURCE][exportName] = fn
+    end
+}
+
+--
+-- Resource Loader
+--
+
+local loadResource
+local loadedResources = {}
+local loadResourceMt = {
+    __call = function(self, resourceName, options)
+        return loadResource(self._g, resourceName, options or {})
+    end
+}
+
+local function createEnvironment(resourceName, version)
+    local _g = {}
+    
+    _g._RESOURCE    = resourceName
+    _g._VERSION     = version
+    _g.Exports      = setmetatable({ _RESOURCE = resourceName }, exportsMt)
+    _g.LoadResource = setmetatable({ _g = _g }, loadResourceMt)
+
+    local env = {}
+
+    env._G = _G
+    env._ENV = setmetatable(env, {
+        __index = function(self, k)
+            if _g[k] == nil then
+                return _G[k]
+            end
+
+            return _g[k]
+        end,
+
+        __newindex = _g
+    })
+
+    return env
+end
+
 local function loadScript(code, filePath, environment, ...)
     local _,fn,err = pcall(load, code, filePath, 'bt', environment)
 
@@ -133,27 +124,23 @@ local function loadScript(code, filePath, environment, ...)
     return ret
 end
 
-local loadedResources = {}
-
-local function handleReturn(resourceName, options, globalTable)
+local function handleReturn(_g, resourceName, options, globalTable)
     if not next(globalTable) then
         return nil
     end
 
     if options.injectGlobal then
-        getfenv(2)[resourceName] = globalTable
+        _g[resourceName] = globalTable
     else
         return globalTable
     end
 end
 
-function LoadResource(resourceName, options)
-    options = options or {}
-
+loadResource = function(_g, resourceName, options)
     local version = options.version or "root"
 
     if loadedResources[resourceName] and loadedResources[resourceName][version] then
-        return handleReturn(resourceName, options, loadedResources[resourceName][version])
+        return handleReturn(_g, resourceName, options, loadedResources[resourceName][version])
     end
 
     options = options or {}
@@ -167,10 +154,15 @@ function LoadResource(resourceName, options)
     end
 
     local entryFileContent = readFile(entryFilePath)
+
+    if type(entryFileContent) ~= "string" then
+        return error("resource has invalid resource.json entry file: " .. resourceName)
+    end
+    
     local resourceDef = json.decode(entryFileContent)
 
-    if not resourceDef then
-        return error("resource has invalid resource.json entry file: " .. resourceName)
+    if type(resourceDef) ~= "table" then
+        return error("resource has invalid resource.json entry file content: " .. resourceName)
     end
 
     local env = options.env or createEnvironment(resourceName, options.version or "default")
@@ -208,20 +200,66 @@ function LoadResource(resourceName, options)
     loadedResources[resourceName] = loadedResources[resourceName] or {}
     loadedResources[resourceName][version] = globalTable
 
-    handleReturn(resourceName, options, globalTable)
+    return handleReturn(_g, resourceName, options, globalTable)
 end
+
+--
+-- Events
+--
+
+local eventListeners = {}
+
+function TriggerEvent(eventName, ...)
+    if type(eventName) ~= "string" then 
+        return error("TriggerEvent requires a string [eventName] as the first argument.") 
+    end
+
+    if not eventListeners[eventName] then 
+        return 
+    end
+
+    for _,callback in ipairs(eventListeners[eventName]) do
+        callback(...)
+    end
+end
+
+function AddEventHandler(eventName, callback)
+    if type(eventName) ~= "string" then 
+        return error("AddEventHandler requires a string [eventName] as the first argument.")   
+    end
+
+    if type(callback) ~= "function" then 
+        return error("AddEventHandler requires a function [callback] as the second argument.") 
+    end
+
+    eventListeners[eventName] = eventListeners[eventName] or {}
+
+    table.insert(eventListeners[eventName], callback)
+end
+
+--
+-- JSON Data Loader
+--
 
 function LoadData(resourceName, filePath)
     local path = "modules/" .. resourceName .. "/" .. filePath
 
     if not fileExists(path) then
-        return error("invalid file: " .. path)
+        return error("invalid data file: " .. path)
     end
 
     local content = readFile(path)
 
+    if type(content) ~= "string" then
+        return error("invalid data file content: " .. path)
+    end
+
     return json.decode(content)
 end
+
+--
+-- Resource Initialization
+--
 
 local initResourceFilePath = "resources.json"
 
@@ -229,12 +267,12 @@ if not fileExists(initResourceFilePath) then
     return error("resources.json is not present in root directory")
 end
 
-local initResources = json.decode(readFile(initResourceFilePath))
+local initResources = json.decode(readFile(initResourceFilePath) or "")
 
 if type(initResources) ~= "table" then
     return error("failed to parse resources.json file")
 end
 
 for _,resourceDef in ipairs(initResources) do
-    LoadResource(resourceDef.name, resourceDef.options)
+    loadResource(_G, resourceDef.name, resourceDef.options or {})
 end
