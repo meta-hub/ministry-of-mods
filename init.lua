@@ -116,13 +116,12 @@ local loadResourceMt = {
 
 local function createEnvironment(resourceName, version)
     local _g = {}
-    local _gProxy = { _RESOURCE = resourceName, _g = _g }
 
     _g._RESOURCE    = resourceName
     _g._VERSION     = version
-    _g.LoadResource = setmetatable(_gProxy, loadResourceMt)
-    _g.Exports      = setmetatable(_gProxy, exportsMt)
-    _g.Locale       = setmetatable(_gProxy, localesMt)
+    _g.LoadResource = setmetatable({ _g = _g }, loadResourceMt)
+    _g.Exports      = setmetatable({ _RESOURCE = resourceName }, exportsMt)
+    _g.Locale       = setmetatable({ _RESOURCE = resourceName }, localesMt)
 
     local env = {}
 
