@@ -28,7 +28,7 @@ Example:
 
 ```lua
 RegisterForEvent("init", function()
-    print(_RESOURCE .. " (v" .. _VERSION .. ") started.")
+    print(_RESOURCE .. " (Version: " .. _VERSION .. ") started.")
 end)
 ```
 
