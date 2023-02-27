@@ -150,7 +150,7 @@ myModule /
             main.lua
 ```
 
-Given the above example structure (all files in root directory, main.lua is the only script), developers can load the new version of your resource like so:
+Load version "foo":
 
 ```lua
 local myModule = LoadResource("myModule", { version = "foo" })
