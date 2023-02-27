@@ -1,4 +1,8 @@
-require("./dependencies/json")
+--
+-- Globalize JSON
+--
+
+require("dependencies/json")
 
 --
 -- File Validation
@@ -27,6 +31,19 @@ local function readFile(path)
 
     return code
 end
+
+--
+-- Global Config
+-- 
+
+local globalConfigFilePath = "data/config.json"
+
+if not fileExists(globalConfigFilePath) then
+    return error("No global config file found.")
+end
+
+local globalConfigString = readFile(globalConfigFilePath) or "[]"
+local globalConfig = json.decode(globalConfigString)
 
 --
 -- Exports
@@ -67,6 +84,25 @@ local exportsMt = {
 }
 
 --
+-- Locales
+--
+
+local locales = {}
+
+local function translate(self, labelName)
+    if not locales[self._RESOURCE] then
+        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale)
+    end
+
+    return locales[self._RESOURCE][labelName]
+end
+
+local localesMt = {
+    __index = translate,
+    __call = translate
+}
+
+--
 -- Resource Loader
 --
 
@@ -80,11 +116,13 @@ local loadResourceMt = {
 
 local function createEnvironment(resourceName, version)
     local _g = {}
-    
+    local _gProxy = { _RESOURCE = resourceName, _g = _g }
+
     _g._RESOURCE    = resourceName
     _g._VERSION     = version
-    _g.Exports      = setmetatable({ _RESOURCE = resourceName }, exportsMt)
-    _g.LoadResource = setmetatable({ _g = _g }, loadResourceMt)
+    _g.LoadResource = setmetatable(_gProxy, loadResourceMt)
+    _g.Exports      = setmetatable(_gProxy, exportsMt)
+    _g.Locale       = setmetatable(_gProxy, localesMt)
 
     local env = {}
 
@@ -219,7 +257,7 @@ function TriggerEvent(eventName, ...)
     end
 
     for _,callback in ipairs(eventListeners[eventName]) do
-        callback(...)
+        CreateThread(callback, ...)
     end
 end
 
@@ -235,6 +273,43 @@ function AddEventHandler(eventName, callback)
     eventListeners[eventName] = eventListeners[eventName] or {}
 
     table.insert(eventListeners[eventName], callback)
+end
+
+--
+-- Native Event Handlers
+--
+
+local nativeEventListeners = {}
+local nativeListener = registerForEvent
+
+registerForEvent = nil
+
+function RegisterForEvent(eventName, callback)
+    if type(eventName) ~= "string" then 
+        return error("RegisterForEvent requires a string [eventName] as the first argument.")   
+    end
+
+    if type(callback) ~= "function" then 
+        return error("RegisterForEvent requires a function [callback] as the second argument.") 
+    end
+
+    if eventName == "update" then
+        return error("The native update event must be listened for with the CreateThread function.")
+    end
+
+    if not nativeEventListeners[eventName] then
+        local listeners = {}
+
+        nativeListener(eventName, function(...)
+            for _,callback in ipairs(listeners) do
+                callback(...)
+            end
+        end)
+
+        nativeEventListeners[eventName] = listeners
+    end
+    
+    table.insert(nativeEventListeners[eventName], callback)
 end
 
 --
@@ -258,10 +333,101 @@ function LoadData(resourceName, filePath)
 end
 
 --
+-- Thread Tracker
+-- 
+
+local threads = {}
+
+function CreateThread(callback, ...)
+    if type(callback) ~= "function" then 
+        return error("CreateThread requires a function [callback] as the first argument.") 
+    end
+
+    local thread = {
+        coroutine = coroutine.create(callback),
+        waitTime = -1,
+        prevTime = GetGameTimer(),
+        args = {...}
+    }
+    
+    local function Wait(waitTime)
+        thread.waitTime = waitTime
+        coroutine.yield(thread.coroutine)
+    end
+
+    local env = getfenv(callback)
+
+    local threadMt = setmetatable({}, {
+        __index = function(self, k)
+            if k == "Wait" then
+                return Wait
+            else
+                return env[k]
+            end
+        end,
+
+        __newindex = env
+    })
+
+    setfenv(callback, threadMt)
+    
+    table.insert(threads, thread)
+end
+
+function SetTimeout(callback, delay)
+    if type(callback) ~= "function" then 
+        return error("SetTimeout requires a function [callback] as the first argument.") 
+    end
+
+    if type(delay) ~= "number" then 
+        return error("SetTimeout requires a number [delay] as the second argument.") 
+    end
+
+    local thread = {
+        coroutine = coroutine.create(callback),
+        waitTime = delay,
+        prevTime = GetGameTimer(),
+        kill = true
+    }
+    
+    table.insert(threads, thread)
+end
+
+local gameTime = 0
+
+function GetGameTimer()
+    return math.floor(gameTime * 1000)
+end
+
+nativeListener("update", function(deltaTime)
+    gameTime = gameTime + deltaTime
+
+    if #threads == 0 then
+        return
+    end
+
+    local timeNow = GetGameTimer()
+
+    for i=#threads,1,-1 do
+        local thread = threads[i]
+
+        if thread.waitTime <= 0 or timeNow - thread.prevTime >= thread.waitTime then
+            coroutine.resume(thread.coroutine, table.unpack(thread.args))
+
+            if thread.kill then
+                table.remove(threads, i)
+            else
+                thread.prevTime = timeNow
+            end
+        end
+    end
+end)
+
+--
 -- Resource Initialization
 --
 
-local initResourceFilePath = "resources.json"
+local initResourceFilePath = "data/resources.json"
 
 if not fileExists(initResourceFilePath) then
     return error("resources.json is not present in root directory")
