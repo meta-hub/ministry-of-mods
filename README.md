@@ -104,8 +104,6 @@ We can now access this resources functions as defined within the resource:
 myModule.foo()
 ```
 
-NOTE: LoadResource **must** be called from the root stack, i.e, not inside a function.
-
 ### Loading Data
 
 The `LoadData` function has been provided to load json data files.   
