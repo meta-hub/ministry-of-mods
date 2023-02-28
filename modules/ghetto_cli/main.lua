@@ -1,8 +1,4 @@
-local commands = {
-    test = function(a, b, c)
-        print(a, b, c)
-    end
-}
+local commands = {}
 
 local function awaitCommand()
     local path = "plugins/mom/modules/ghetto_cli/output.txt"
@@ -54,4 +50,8 @@ CreateThread(function()
         awaitCommand()
         Wait(2000)
     end
+end)
+
+Exports("registerCommand", function(commandName, callback)
+    commands[commandName] = callback
 end)
