@@ -1,5 +1,11 @@
 [
     {
-        "name": "boilerplate"
+        "name": "discord"
+    },
+    {
+        "name": "world"
+    },
+    {
+        "name": "player"
     }
 ]
