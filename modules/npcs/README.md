@@ -7,10 +7,10 @@ This module at the moment regulates creating Peds.
 This module has 2 exports
 ```LUA
     Exports.npcs.CreatePed(gender, gear, features, house, spawnPos)
-    Exports.npcs.HidePed(Ped)
+    Exports.npcs.RemovePed(Ped)
 ```
 
-This is an example of how to create a ped, perhaps use a ped and hide a ped..
+This is an example of how to create a ped, perhaps use a ped and remove a ped..
 ```LUA
 -- Create a ped
 local gear = {
@@ -63,19 +63,19 @@ CreateThread(function()
             end
 
             --[[
-                Hide a Ped
+                Remove a Ped
                 Using this export does 2 things.
                     - Move the Ped to a far far away spot.
                     - returns false
-                In this example, when you connect to the server you will automatically have this NPC move (untill it gets to 200). IF for example, you called the HidePed event, while it was in the process of moving the ped, lets say at i = 100,
+                In this example, when you connect to the server you will automatically have this NPC move (untill it gets to 200). IF for example, you called the RemovePed event, while it was in the process of moving the ped, lets say at i = 100,
 
                 it first moves the ped far far away, then clears it from the Peds table, and returns false.
-                by setting entity2 = Events.npcs.HidePed() - the return (which is false) now makes entity 2 = false. By doing so, if the for loop is still firing, the if not statment would prevent the code from executing further code - preventing it from snapping back to where it wants to finish and errors.
+                by setting entity2 = Events.npcs.RemovePed() - the return (which is false) now makes entity 2 = false. By doing so, if the for loop is still firing, the if not statment would prevent the code from executing further code - preventing it from snapping back to where it wants to finish and errors.
 
                 disconnecting will always remove the ped from your world
                 upon reconnecting, the ped would still be loaded however, it would maintain its location in far far away - Since everything is serverside.
             ]]
-            entity2 = Exports.npcs.HidePed(entity2)
+            entity2 = Exports.npcs.RemovePed(entity2)
         end
         for i = 6, 360, 6 do
             if not entity then return end

@@ -36,21 +36,9 @@ function CreatePed(gender, gear, features, house, spawnPos)
 end
 
 function RemovePed(Ped)
-    for i = 1, 10000, 10 do
-        local time_point = Ped.time_point
-        local movement = time_point.movement
-        movement.position.x = 353903 + i
-        movement.position.y = -466938 + i
-        movement.position.z = -85208 + i
-        movement.speed = 10
-        movement.direction = 0
-        time_point.movement = movement
-        Ped.time_point = time_point
-        Ped:RpcApplyMovement()
-    end
-
     for i,v in pairs(Peds) do
         if v == Ped then
+            server.npc_manager:Remove(Ped)
             table.remove(Peds, i)
             return false
         end
@@ -59,4 +47,4 @@ end
 
 Exports("CreatePed", CreatePed)
 
-Exports("HidePed", RemovePed)
+Exports("RemovePed", RemovePed)
