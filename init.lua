@@ -93,7 +93,7 @@ local locales = {}
 
 local function translate(self, labelName)
     if not locales[self._RESOURCE] then
-        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale)
+        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale .. ".json")
     end
 
     return locales[self._RESOURCE][labelName]
@@ -185,7 +185,7 @@ loadResource = function(_g, resourceName, options)
     options = options or {}
 
     local versionPath = options.version and ("/" .. options.version) or ""
-    local resourcePath = "modules/" .. resourceName .. versionPath
+    local resourcePath = _PATH .. "/modules/" .. resourceName .. versionPath
     local entryFilePath = resourcePath .. "/resource.json"
 
     if not fileExists(entryFilePath) then
@@ -318,7 +318,7 @@ end
 --
 
 function LoadData(resourceName, filePath)
-    local path = "modules/" .. resourceName .. "/" .. filePath
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
 
     if not fileExists(path) then
         return error("invalid data file: " .. path)
