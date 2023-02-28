@@ -1,3 +1,5 @@
+_G._PATH = io.popen("cd"):read("*l")
+
 --
 -- Globalize JSON
 --

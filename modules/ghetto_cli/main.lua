@@ -1,6 +1,6 @@
 local commands = {
     test = function(a, b, c)
-        print("TEST", a, b, c)
+        print(a, b, c)
     end
 }
 
@@ -39,11 +39,16 @@ local function awaitCommand()
 
     table.remove(args, 1)
 
+    print("Executing command: " .. cmd)
+
     commands[cmd](table.unpack(args))
 end
 
 CreateThread(function()
-    os.execute("start lua54 plugins/mom/modules/ghetto_cli/cli.lua")
+    local str = 'start %s "plugins/mom/modules/ghetto_cli/cli.lua" "%s"'
+    local cmd = str:format(Config.lua_path, _PATH)
+
+    os.execute(cmd)
 
     while true do
         awaitCommand()
