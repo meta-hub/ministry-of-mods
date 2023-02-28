@@ -6,20 +6,20 @@ This is a resource to handle containerization and cross-resource communication f
 
 ## For Users
 
-- Clone this repository into your `HogwartsLegacy/Server/plugins/` directory.   
-- Check the `data/resources.json` file to disable any modules you might not want active on your server.   
+- Clone this repository into your `HogwartsLegacy/Server/plugins/` directory.
+- Check the `data/resources.json` file to disable any modules you might not want active on your server.
 - Check the `data/config.json` file for any global variables you may want to change.
-- Start your server, and observer the console. If no errors are present, the resource should now be running.   
+- Start your server, and observer the console. If no errors are present, the resource should now be running.
 
 ## For Developers
 
 ### Creating a Module
 
-- Add a new folder to the `modules/` directory.  
-- Ensure the folder name is somewhat descriptive of what your resource intends to do.   
-- At the root of your modules directory, add a `resource.json` file.   
-- Inside the `resource.json` file, create an array of file paths to load (excluding `.lua`).   
-- The load order will be the same as listed in your `resource.json` file.   
+- Add a new folder to the `modules/` directory.
+- Ensure the folder name is somewhat descriptive of what your resource intends to do.
+- At the root of your modules directory, add a `resource.json` file.
+- Inside the `resource.json` file, create an array of file paths to load (excluding `.lua`).
+- The load order will be the same as listed in your `resource.json` file.
 
 ### Native Events
 
@@ -56,7 +56,7 @@ end)
 
 ### Exports and Events
 
-A simple events and exports system has been provided to allow cross-resource communication without the use of `require`.   
+A simple events and exports system has been provided to allow cross-resource communication without the use of `require`.
 Exports are synchronous, events use `CreateThread` to ensure parallel execution.
 
 Exports Example:
@@ -83,15 +83,15 @@ TriggerEvent("myModule:myEvent", "bar")
 
 ### Using a Module
 
-To load another module into your resource, two primary methods have been provided.   
-Both of these methods use the `LoadResource` function, which is able to be referenced in all modules.   
+To load another module into your resource, two primary methods have been provided.
+Both of these methods use the `LoadResource` function, which is able to be referenced in all modules.
 The first method retrieves a local reference to the module:
 
 ```lua
 local myModule = LoadResource("myModule")
 ```
 
-The second method injects a global (to your resources environment) reference of the resource.   
+The second method injects a global (to your resources environment) reference of the resource.
 This method will use the resource name as the definition.
 
 ```lua
@@ -106,7 +106,7 @@ myModule.foo()
 
 ### Loading Data
 
-The `LoadData` function has been provided to load json data files.   
+The `LoadData` function has been provided to load json data files.
 You can load data files from any resource.
 
 ```lua
@@ -116,7 +116,7 @@ local myData = LoadData("myModule", "data/myData.json")
 
 ### Versioning
 
-Backward and forward compatibility can be maintained through the use of versioning within modules.   
+Backward and forward compatibility can be maintained through the use of versioning within modules.
 To update your module to a newer release (in this example, version "1.0.0"), follow the example directory layout:
 
 ```
@@ -139,8 +139,8 @@ The file structure and version names are arbitrary. The following example would 
 ```
 myModule /
     resource.json
-    
-    bar / 
+
+    bar /
         main.lua
 
     foo /
