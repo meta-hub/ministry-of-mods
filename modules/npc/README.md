@@ -6,8 +6,8 @@ This module at the moment regulates creating Peds.
 
 This module has 2 exports
 ```LUA
-    Exports.npcs.CreatePed(gender, gear, features, house, spawnPos)
-    Exports.npcs.RemovePed(Ped)
+    Exports.npc.CreatePed(gender, gear, features, house, spawnPos)
+    Exports.npc.RemovePed(Ped)
 ```
 
 This is an example of how to create a ped, perhaps use a ped and remove a ped..
@@ -37,8 +37,8 @@ local spawnPos = {
     z = -85208
 }
 
-local entity = Exports.npcs.CreatePed(0, gear, features, 2, spawnPos)
-local entity2 = Exports.npcs.CreatePed(0, gear, features, 2, spawnPos)
+local entity = Exports.npc.CreatePed(0, gear, features, 2, spawnPos)
+local entity2 = Exports.npc.CreatePed(0, gear, features, 2, spawnPos)
 
 -- Use a ped
 local done = false

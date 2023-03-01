@@ -4,7 +4,7 @@ _G._PATH = io.popen("cd"):read("*l")
 -- Globalize JSON
 --
 
-require("dependencies/json")
+json = require("library/dkjson")
 
 --
 -- File Validation
@@ -38,14 +38,10 @@ end
 -- Global Config
 --
 
-local globalConfigFilePath = "data/config.json"
-
-if not fileExists(globalConfigFilePath) then
+if not fileExists("config.lua") then
     return error("No global config file found.")
 end
-
-local globalConfigString = readFile(globalConfigFilePath) or "[]"
-local globalConfig = json.decode(globalConfigString)
+require("config")
 
 --
 -- Exports
@@ -59,7 +55,7 @@ local exportsMt = {
         end
 
         if not exports[resourceName] then
-            return error(string.format("No exports defined for %s. Are you sure this resource has been started?"), resourceName)
+            return error(string.format("No exports defined for %s. Are you sure this resource has been started?", resourceName))
         end
 
         return setmetatable({}, {
@@ -93,7 +89,7 @@ local locales = {}
 
 local function translate(self, labelName)
     if not locales[self._RESOURCE] then
-        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale .. ".json")
+        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. Config.Language .. ".json")
     end
 
     return locales[self._RESOURCE][labelName]
@@ -428,18 +424,8 @@ end)
 -- Resource Initialization
 --
 
-local initResourceFilePath = "data/resources.json"
-
-if not fileExists(initResourceFilePath) then
-    return error("resources.json is not present in root directory")
-end
-
-local initResources = json.decode(readFile(initResourceFilePath) or "")
-
-if type(initResources) ~= "table" then
-    return error("failed to parse resources.json file")
-end
-
-for _,resourceDef in ipairs(initResources) do
-    loadResource(_G, resourceDef.name, resourceDef.options or {})
+for _,resourceDef in ipairs(Config.Modules) do
+    if type(resourceDef) == "table" and resourceDef.name ~= nil then
+        loadResource(_G, resourceDef.name, resourceDef.options or {})
+    end
 end
