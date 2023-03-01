@@ -8,5 +8,3 @@ Config.Modules = {
     {name = "player"},
     {name = "npc"},
 }
-
-return Config
