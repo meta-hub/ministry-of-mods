@@ -60,7 +60,6 @@ if register_global_module_table then
   if always_use_lpeg then
     _G[global_module_name] = jsonlpeg
   else
-    print("hello")
     _G[global_module_name] = json
   end
 end
