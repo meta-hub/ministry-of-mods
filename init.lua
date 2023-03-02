@@ -4,9 +4,6 @@ _G._PATH = io.popen("cd"):read("*l")
 -- Globalize JSON
 --
 
-<<<<<<< Updated upstream
-json = require("library/dkjson")
-=======
 require("library/dkjson")
 
 --
@@ -14,7 +11,6 @@ require("library/dkjson")
 --
 
 require("config")
->>>>>>> Stashed changes
 
 --
 -- File Validation
@@ -45,18 +41,6 @@ local function readFile(path)
 end
 
 --
-<<<<<<< Updated upstream
--- Global Config
---
-
-if not fileExists("config.lua") then
-    return error("No global config file found.")
-end
-require("config")
-
---
-=======
->>>>>>> Stashed changes
 -- Exports
 --
 
@@ -437,12 +421,6 @@ end)
 -- Resource Initialization
 --
 
-<<<<<<< Updated upstream
-for _,resourceDef in ipairs(Config.Modules) do
-    if type(resourceDef) == "table" and resourceDef.name ~= nil then
-        loadResource(_G, resourceDef.name, resourceDef.options or {})
-    end
-=======
 local initResourceFilePath = "resources.json"
 
 if not fileExists(initResourceFilePath) then
@@ -457,5 +435,4 @@ end
 
 for _,resourceDef in ipairs(initResources) do
     loadResource(_G, resourceDef.name, resourceDef.options or {})
->>>>>>> Stashed changes
 end
