@@ -1,4 +1,5 @@
 Config = {}
+<<<<<<< Updated upstream
 
 Config.Language = "en"
 
@@ -8,3 +9,6 @@ Config.Modules = {
     {name = "player"},
     {name = "npc"},
 }
+=======
+Config.Language = "en"
+>>>>>>> Stashed changes

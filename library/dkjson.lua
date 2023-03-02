@@ -1,6 +1,10 @@
 -- Module options:
 local always_use_lpeg = false
+<<<<<<< Updated upstream
 local register_global_module_table = false
+=======
+local register_global_module_table = true
+>>>>>>> Stashed changes
 local global_module_name = 'json'
 
 --[==[
