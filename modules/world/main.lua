@@ -226,3 +226,7 @@ Exports("FreezeWeather", function(state)
         end
     end
 end)
+
+Exports("GetWorldData", function()
+    return WorldData
+end)

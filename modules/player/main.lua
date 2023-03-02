@@ -26,13 +26,7 @@ end)
 -- Functions
 function Track(Player, Joined)
     if Joined then
-        table.insert(PlayersTable, {
-            id = Player.id,
-            gender = Player.gender,
-            house = Player.house,
-            gear = Player.gear,
-            movement = Player.movement
-        })
+        table.insert(PlayersTable, Player)
         if Config.DiscordLogs then
             Exports.discord.LogToDiscord("player", Locale.player_join_title, {r = 165, g = 165, b = 165}, string.format(Locale.player_join_message, Player.id), false)
         end
