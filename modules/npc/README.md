@@ -8,6 +8,7 @@ This module has 2 exports
 ```LUA
     Exports.npc.CreatePed(gender, gear, features, house, spawnPos)
     Exports.npc.RemovePed(Ped)
+    Exports.npc.GetSpawnedPeds()
 ```
 
 This is an example of how to create a ped, perhaps use a ped and remove a ped..

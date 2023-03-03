@@ -48,3 +48,7 @@ end
 Exports("CreatePed", CreatePed)
 
 Exports("RemovePed", RemovePed)
+
+Exports("GetSpawnedPeds", function()
+    return Peds
+end)
