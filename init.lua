@@ -1,20 +1,77 @@
+--[[ -----------------
+    Required First
+]] -------------------
 _G._PATH = io.popen("cd"):read("*l")
-
---
--- Globalize JSON
---
-
+core = {}
 require("library/dkjson")
 
---
--- Global Config
---
+--[[ -----------------------
+    Setup Core Variables
+]] -------------------------
 
-require("config")
+function author(data)
+    if (type(data) == "string" and data ~= '') or (type(data) == "table" and data ~= {}) then
+        core.author = data
+        _G["author"] = nil
+        _G["authors"] = nil
+    else
+        return error("author or authors where are not a string or table")
+    end
+end
+authors = author
 
---
--- File Validation
---
+function contributor(data)
+    if (type(data) == "string" and data ~= '') or (type(data) == "table" and data ~= {}) then
+        core.contributor = data
+        _G["contributor"] = nil
+        _G["contributors"] = nil
+    else
+        return error("contributor or contributors was not a string or table")
+    end
+end
+contributors = contributor
+
+function description(data)
+    if type(data) == "string" and data ~= '' then
+        core.description = data
+        _G["description"] = nil
+    else
+        return error("description was not a string")
+    end
+end
+
+function version(data)
+    if type(data) == "string" and data ~= '' then
+        core.version = data
+        _G["version"] = nil
+    else
+        return error("version was not a string")
+    end
+end
+
+function language(data)
+    if type(data) == "string" and data ~= '' then
+        core.language = data
+        _G["language"] = nil
+    else
+        return error("language was not a string")
+    end
+end
+
+function modules(data)
+    if type(data) == "table" and data ~= {} then
+        core.modules = data
+        _G["modules"] = nil
+    else
+        return error("modules is not a table")
+    end
+end
+
+require("manifest")
+
+--[[ ------------------------
+    Setup File Validation
+]] --------------------------
 
 local function fileExists(path)
     local file = io.open(path, "r")
@@ -40,9 +97,48 @@ local function readFile(path)
     return code
 end
 
---
--- Exports
---
+--[[ -----------------
+    JSON Load Data
+]] -------------------
+
+function LoadData(resourceName, filePath)
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
+
+    if not fileExists(path) then
+        return error("invalid data file: " .. path)
+    end
+
+    local content = readFile(path)
+
+    if type(content) ~= "string" then
+        return error("invalid data file content: " .. path)
+    end
+
+    return json.decode(content)
+end
+
+--[[ ---------------------
+    Setup Localization
+]] -----------------------
+
+local locales = {}
+
+local function translate(self, labelName)
+    if not locales[self._RESOURCE] then
+        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. core.language .. ".json")
+    end
+
+    return locales[self._RESOURCE][labelName]
+end
+
+local localesMt = {
+    __index = translate,
+    __call = translate
+}
+
+--[[ -------------------------
+    Setup Exports Function
+]] ---------------------------
 
 local exports = {}
 local exportsMt = {
@@ -78,28 +174,9 @@ local exportsMt = {
     end
 }
 
---
--- Locales
---
-
-local locales = {}
-
-local function translate(self, labelName)
-    if not locales[self._RESOURCE] then
-        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. Config.Language .. ".json")
-    end
-
-    return locales[self._RESOURCE][labelName]
-end
-
-local localesMt = {
-    __index = translate,
-    __call = translate
-}
-
---
--- Resource Loader
---
+--[[ ----------------
+    Setup Modules
+]] ------------------
 
 local loadResource
 local loadedResources = {}
@@ -235,9 +312,9 @@ loadResource = function(_g, resourceName, options)
     return handleReturn(_g, resourceName, options, globalTable)
 end
 
---
--- Events
---
+--[[ ---------------
+    Setup Events
+]] -----------------
 
 local eventListeners = {}
 
@@ -268,10 +345,7 @@ function AddEventHandler(eventName, callback)
 
     table.insert(eventListeners[eventName], callback)
 end
-
---
--- Native Event Handlers
---
+--[[ --------------------------------------------------- ]]--
 
 local nativeEventListeners = {}
 local nativeListener = registerForEvent
@@ -305,30 +379,7 @@ function RegisterForEvent(eventName, callback)
 
     table.insert(nativeEventListeners[eventName], callback)
 end
-
---
--- JSON Data Loader
---
-
-function LoadData(resourceName, filePath)
-    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
-
-    if not fileExists(path) then
-        return error("invalid data file: " .. path)
-    end
-
-    local content = readFile(path)
-
-    if type(content) ~= "string" then
-        return error("invalid data file content: " .. path)
-    end
-
-    return json.decode(content)
-end
-
---
--- Thread Tracker
---
+--[[ --------------------------------------------------- ]]--
 
 local threads = {}
 
@@ -417,22 +468,10 @@ nativeListener("update", function(deltaTime)
     end
 end)
 
---
--- Resource Initialization
---
+--[[ ---------------
+    Load Modules
+]] -----------------
 
-local initResourceFilePath = "resources.json"
-
-if not fileExists(initResourceFilePath) then
-    return error("resources.json is not present in root directory")
-end
-
-local initResources = json.decode(readFile(initResourceFilePath) or "")
-
-if type(initResources) ~= "table" then
-    return error("failed to parse resources.json file")
-end
-
-for _,resourceDef in ipairs(initResources) do
+for _,resourceDef in ipairs(core.modules) do
     loadResource(_G, resourceDef.name, resourceDef.options or {})
 end
