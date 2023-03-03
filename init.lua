@@ -98,6 +98,37 @@ local function readFile(path)
     return code
 end
 
+--[[
+
+]]
+
+function writePlayerData(playerData)
+    local file = io.open(_PATH .. "/data/" .. "playerdata.json", "r")
+    if file then
+        local existingData = json.decode(file:read("*all"))
+        file:close()
+        for key, value in pairs(playerData) do
+            if not existingData[key] then
+                existingData[key] = value
+            end
+        end
+        file = io.open(_PATH .. "/data/" .. "playerdata.json", "w")
+        if file then
+            file:write(json.encode(existingData))
+            file:close()
+        end
+    end
+end
+
+function readPlayerData()
+    local file = io.open(_PATH .. "/data/" .. "playerdata.json", "r")
+    if file then
+        local data = json.decode(file:read("*all"))
+        file:close()
+        return data
+    end
+end
+
 --[[ -----------------
     JSON Load Data
 ]] -------------------

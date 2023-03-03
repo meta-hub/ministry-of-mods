@@ -14,6 +14,8 @@ local PlayerHouses = {
     [4] = Locale.house_u,
 }
 
+
+local defaultPlayerTable = {gold = 100}
 -- ConnectToEvents
 RegisterForEvent("player_joined", function(Player)
     Track(Player, true)
@@ -25,6 +27,16 @@ end)
 
 -- Functions
 function Track(Player, Joined)
+    local getPlayerData = readPlayerData()
+    local stringId = tostring(Player.id)
+    if not getPlayerData[stringId] then
+        print("player doesn't exist")
+        local tempTable = {[stringId] = defaultPlayerTable}
+        writePlayerData(tempTable)
+    else
+        print(getPlayerData[stringId]["gold"])
+    end
+
     if Joined then
         table.insert(PlayersTable, Player)
         if Config.DiscordLogs then
