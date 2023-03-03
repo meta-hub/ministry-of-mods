@@ -1,9 +1,9 @@
 
 language 'en'
 
-author 'Brayden#2812'
+author 'Brayden#2812 (Ministry of Mods)'
 contributors {
-    "BrianTU#0001"
+    "BrianTU#0001 (world, player, npc, discord)",
 }
 description 'Ministry of Mods is a ...'
 version '1.0.0'
