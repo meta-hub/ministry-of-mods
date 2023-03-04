@@ -3,15 +3,6 @@ local SyncTick, WeatherTick, SecondTick = 0, 0, 0
 local FreezeTime, FreezeWeather = Config.Settings.FreezeTime, Config.Settings.FreezeWeather
 local WorldData = {}
 
--- ConnectToEvents
-RegisterForEvent("init", function()
-    Initiate()
-end)
-
-CreateThread(function(DeltaTime)
-    Update(DeltaTime)
-end)
-
 -- Functions
 local function get_days_in_month(month, year)
     local days_in_month = {31,28,31,30,31,30,31,31,30,31,30,31}
@@ -30,6 +21,27 @@ local function get_days_in_month(month, year)
     end
 
     return d
+end
+
+local function WorldSync()
+    for i,v in pairs(WorldData) do
+        world[i] = v
+    end
+
+    world:RpcSet()
+
+    if Config.DiscordLogs then
+        Exports.discord.LogToDiscord("world", Locale.world_sync_title, {r = 165, g = 165, b = 165}, Locale.world_sync_message, false)
+    end
+end
+
+local function NewWeather()
+    local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData["month"]]]
+    local getWeather = Config.WeatherTypes[math.random(1,#Config.Seasons[getSeason])]
+
+    WorldData["weather"] = Config.WeatherTypes[getWeather]
+
+    WorldSync()
 end
 
 local function Initiate()
@@ -168,27 +180,6 @@ local function Update(Delta)
     end
 end
 
-local function NewWeather()
-    local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData["month"]]]
-    local getWeather = Config.WeatherTypes[math.random(1,#Config.Seasons[getSeason])]
-
-    WorldData["weather"] = Config.WeatherTypes[getWeather]
-
-    WorldSync()
-end
-
-local function WorldSync()
-    for i,v in pairs(WorldData) do
-        world[i] = v
-    end
-
-    world:RpcSet()
-
-    if Config.DiscordLogs then
-        Exports.discord.LogToDiscord("world", Locale.world_sync_title, {r = 165, g = 165, b = 165}, Locale.world_sync_message, false)
-    end
-end
-
 -- Exports
 
 Exports("SetWorldData", function(DataTable)
@@ -229,4 +220,13 @@ end)
 
 Exports("GetWorldData", function()
     return WorldData
+end)
+
+-- ConnectToEvents
+RegisterForEvent("init", function()
+    Initiate()
+end)
+
+CreateThread(function(DeltaTime)
+    Update(DeltaTime)
 end)

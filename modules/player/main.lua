@@ -14,15 +14,6 @@ local PlayerHouses = {
     [4] = Locale.house_u,
 }
 
--- ConnectToEvents
-RegisterForEvent("player_joined", function(Player)
-    Track(Player, true)
-end)
-
-RegisterForEvent("player_left", function(Player)
-    Track(Player, false)
-end)
-
 --[[
 
 ]]
@@ -55,6 +46,14 @@ local function readPlayerData()
 end
 
 -- Functions
+local function otherLogs()
+    local message = Locale.current_players_title .. string.format(Locale.current_players_message, countPlayers()) .. "\n"
+        .. Locale.gender_count_title .. "\n```" .. json.encode(countGenders(), {indent = true}) .. "```\n"
+        .. Locale.house_count_title .. "\n```" .. json.encode(countHouses(), {indent = true}) .. "```"
+
+    Exports.discord.LogToDiscord("player", Locale.other_logs_title, {r = 165, g = 165, b = 165}, message, false)
+end
+
 local function Track(Player, Joined)
     local getPlayerData = readPlayerData()
     local stringId = tostring(Player.id)
@@ -112,17 +111,18 @@ local function countHouses()
     return tempData
 end
 
-local function otherLogs()
-    local message = Locale.current_players_title .. string.format(Locale.current_players_message, countPlayers()) .. "\n"
-        .. Locale.gender_count_title .. "\n```" .. json.encode(countGenders(), {indent = true}) .. "```\n"
-        .. Locale.house_count_title .. "\n```" .. json.encode(countHouses(), {indent = true}) .. "```"
-
-    Exports.discord.LogToDiscord("player", Locale.other_logs_title, {r = 165, g = 165, b = 165}, message, false)
-end
-
 -- Exports
 Exports("GetPlayerCount", function()
-    return server.player_manager.count
+    return #PlayersTable
 end)
 Exports("GetPlayerGenders", countGenders)
 Exports("GetPlayerHouses", countHouses)
+
+-- ConnectToEvents
+RegisterForEvent("player_joined", function(Player)
+    Track(Player, true)
+end)
+
+RegisterForEvent("player_left", function(Player)
+    Track(Player, false)
+end)
