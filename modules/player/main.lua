@@ -14,8 +14,6 @@ local PlayerHouses = {
     [4] = Locale.house_u,
 }
 
-
-local defaultPlayerTable = {gold = 100}
 -- ConnectToEvents
 RegisterForEvent("player_joined", function(Player)
     Track(Player, true)
@@ -25,13 +23,44 @@ RegisterForEvent("player_left", function(Player)
     Track(Player, false)
 end)
 
+--[[
+
+]]
+
+local function writePlayerData(playerData)
+    local file = io.open(_PATH .. "/data/" .. "playerdata.json", "r")
+    if file then
+        local existingData = json.decode(file:read("*all"))
+        file:close()
+        for key, value in pairs(playerData) do
+            if not existingData[key] then
+                existingData[key] = value
+            end
+        end
+        file = io.open(_PATH .. "/data/" .. "playerdata.json", "w")
+        if file then
+            file:write(json.encode(existingData))
+            file:close()
+        end
+    end
+end
+
+local function readPlayerData()
+    local file = io.open(_PATH .. "/data/" .. "playerdata.json", "r")
+    if file then
+        local data = json.decode(file:read("*all"))
+        file:close()
+        return data
+    end
+end
+
 -- Functions
-function Track(Player, Joined)
+local function Track(Player, Joined)
     local getPlayerData = readPlayerData()
     local stringId = tostring(Player.id)
     if not getPlayerData[stringId] then
         print("player doesn't exist")
-        local tempTable = {[stringId] = defaultPlayerTable}
+        local tempTable = {[stringId] = Config.defaultPlayerTable}
         writePlayerData(tempTable)
     else
         print(getPlayerData[stringId]["gold"])
@@ -57,11 +86,7 @@ function Track(Player, Joined)
     end
 end
 
-function countPlayers()
-    return #PlayersTable
-end
-
-function countGenders()
+local function countGenders()
     local tempData = {}
     for i,v in pairs(PlayersTable) do
         local genderName = PlayerGenders[v.gender]
@@ -74,7 +99,7 @@ function countGenders()
     return tempData
 end
 
-function countHouses()
+local function countHouses()
     local tempData = {}
     for i,v in pairs(PlayersTable) do
         local houseName = PlayerHouses[v.house]
@@ -87,7 +112,7 @@ function countHouses()
     return tempData
 end
 
-function otherLogs()
+local function otherLogs()
     local message = Locale.current_players_title .. string.format(Locale.current_players_message, countPlayers()) .. "\n"
         .. Locale.gender_count_title .. "\n```" .. json.encode(countGenders(), {indent = true}) .. "```\n"
         .. Locale.house_count_title .. "\n```" .. json.encode(countHouses(), {indent = true}) .. "```"
@@ -96,6 +121,8 @@ function otherLogs()
 end
 
 -- Exports
-Exports("GetPlayerCount", countPlayers)
+Exports("GetPlayerCount", function()
+    return server.player_manager.count
+end)
 Exports("GetPlayerGenders", countGenders)
 Exports("GetPlayerHouses", countHouses)

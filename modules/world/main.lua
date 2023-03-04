@@ -13,7 +13,7 @@ CreateThread(function(DeltaTime)
 end)
 
 -- Functions
-function get_days_in_month(month, year)
+local function get_days_in_month(month, year)
     local days_in_month = {31,28,31,30,31,30,31,31,30,31,30,31}
     local d = days_in_month[month]
 
@@ -32,7 +32,7 @@ function get_days_in_month(month, year)
     return d
 end
 
-function Initiate()
+local function Initiate()
     -- Set primary information to WorldData table
     WorldData["hour"]       = world.hour
     WorldData["minute"]     = world.minute
@@ -105,7 +105,7 @@ function Initiate()
     end
 end
 
-function Update(Delta)
+local function Update(Delta)
     SecondTick = SecondTick + Delta
     SyncTick = SyncTick + Delta
     WeatherTick = WeatherTick + Delta
@@ -168,7 +168,7 @@ function Update(Delta)
     end
 end
 
-function NewWeather()
+local function NewWeather()
     local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData["month"]]]
     local getWeather = Config.WeatherTypes[math.random(1,#Config.Seasons[getSeason])]
 
@@ -177,7 +177,7 @@ function NewWeather()
     WorldSync()
 end
 
-function WorldSync()
+local function WorldSync()
     for i,v in pairs(WorldData) do
         world[i] = v
     end

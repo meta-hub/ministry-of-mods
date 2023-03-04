@@ -1,6 +1,6 @@
 local Peds = {}
 
-function CreatePed(gender, gear, features, house, spawnPos)
+local function CreatePed(gender, gear, features, house, spawnPos)
     local Ped = server.npc_manager:Create()
     Ped.gender = gender
     Ped.house = house
@@ -35,7 +35,7 @@ function CreatePed(gender, gear, features, house, spawnPos)
     return Ped
 end
 
-function RemovePed(Ped)
+local function RemovePed(Ped)
     for i,v in pairs(Peds) do
         if v == Ped then
             server.npc_manager:Remove(Ped)

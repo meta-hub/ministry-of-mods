@@ -4,7 +4,7 @@ This module at the moment regulates creating Peds.
 
 ## For Developers
 
-This module has 2 exports
+This module has 3 exports
 ```LUA
     Exports.npc.CreatePed(gender, gear, features, house, spawnPos)
     Exports.npc.RemovePed(Ped)

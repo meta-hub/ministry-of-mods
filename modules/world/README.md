@@ -24,11 +24,12 @@ For those who need to control weather outside of this resource, use
         --weather = "Astronomy"
     }
 
-    Exports.player.SetWorldData(ExampleTable)
+    Exports.world.SetWorldData(ExampleTable)
 
-    Exports.player.SyncWorldData() -- Forces the world to sync between players
+    Exports.world.SyncWorldData() -- Forces the world to sync between players
 
     -- EXAMPLE: If FreezeTime is on and you execute the trigger below, it will turn it off and vice versa. Same applies to Freeze Weather. Can include a BOOL to force a state.
-    Exports.player.FreezeTime() -- Forces the time to unfreeze
-    Exports.player.FreezeWeather() -- Forces the weather to freeze
+    Exports.world.FreezeTime() -- Forces the time to unfreeze
+    Exports.world.FreezeWeather() -- Forces the weather to freeze
+    Exports.world.GetWorldData() -- Get the current world's data
 ```

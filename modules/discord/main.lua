@@ -1,6 +1,6 @@
 local authorImage = nil
 
-function LogToDiscord(name, title, color, message, tagEveryone)
+local function LogToDiscord(name, title, color, message, tagEveryone)
     local colorMath = math.floor(color.r) * 65536 + math.floor(color.g) * 256 + math.floor(color.b)
     local body = nil
 
