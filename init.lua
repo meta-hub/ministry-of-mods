@@ -7,6 +7,14 @@ _G._PATH = io.popen("cd"):read("*l")
 require("dependencies/json")
 
 --
+-- LUA Extensions
+--
+
+require("dependencies/string")
+require("dependencies/table")
+require("dependencies/math")
+
+--
 -- File Validation
 --
 
@@ -34,9 +42,22 @@ local function readFile(path)
     return code
 end
 
+local function writeFile(path, str)
+    local file = io.open(path, "w+")
+
+    if file == nil then
+        return nil
+    end
+
+    file:write(str)
+    file:close()
+
+    return true
+end
+
 --
 -- Global Config
---
+-- 
 
 local globalConfigFilePath = "data/config.json"
 
@@ -197,7 +218,7 @@ loadResource = function(_g, resourceName, options)
     if type(entryFileContent) ~= "string" then
         return error("resource has invalid resource.json entry file: " .. resourceName)
     end
-
+    
     local resourceDef = json.decode(entryFileContent)
 
     if type(resourceDef) ~= "table" then
@@ -249,12 +270,12 @@ end
 local eventListeners = {}
 
 function TriggerEvent(eventName, ...)
-    if type(eventName) ~= "string" then
-        return error("TriggerEvent requires a string [eventName] as the first argument.")
+    if type(eventName) ~= "string" then 
+        return error("TriggerEvent requires a string [eventName] as the first argument.") 
     end
 
-    if not eventListeners[eventName] then
-        return
+    if not eventListeners[eventName] then 
+        return 
     end
 
     for _,callback in ipairs(eventListeners[eventName]) do
@@ -263,12 +284,12 @@ function TriggerEvent(eventName, ...)
 end
 
 function AddEventHandler(eventName, callback)
-    if type(eventName) ~= "string" then
-        return error("AddEventHandler requires a string [eventName] as the first argument.")
+    if type(eventName) ~= "string" then 
+        return error("AddEventHandler requires a string [eventName] as the first argument.")   
     end
 
-    if type(callback) ~= "function" then
-        return error("AddEventHandler requires a function [callback] as the second argument.")
+    if type(callback) ~= "function" then 
+        return error("AddEventHandler requires a function [callback] as the second argument.") 
     end
 
     eventListeners[eventName] = eventListeners[eventName] or {}
@@ -286,12 +307,12 @@ local nativeListener = registerForEvent
 registerForEvent = nil
 
 function RegisterForEvent(eventName, callback)
-    if type(eventName) ~= "string" then
-        return error("RegisterForEvent requires a string [eventName] as the first argument.")
+    if type(eventName) ~= "string" then 
+        return error("RegisterForEvent requires a string [eventName] as the first argument.")   
     end
 
-    if type(callback) ~= "function" then
-        return error("RegisterForEvent requires a function [callback] as the second argument.")
+    if type(callback) ~= "function" then 
+        return error("RegisterForEvent requires a function [callback] as the second argument.") 
     end
 
     if eventName == "update" then
@@ -309,15 +330,23 @@ function RegisterForEvent(eventName, callback)
 
         nativeEventListeners[eventName] = listeners
     end
-
+    
     table.insert(nativeEventListeners[eventName], callback)
 end
 
 --
--- JSON Data Loader
+-- File Loader
 --
 
-function LoadData(resourceName, filePath)
+function LoadResourceFile(resourceName, filePath)
+    if type(resourceName) ~= "string" then
+        return error("LoadResourceFile requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("LoadResourceFile requires a string [filePath] as the second argument.")
+    end
+
     local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
 
     if not fileExists(path) then
@@ -330,18 +359,80 @@ function LoadData(resourceName, filePath)
         return error("invalid data file content: " .. path)
     end
 
+    return content
+end
+
+function SaveResourceFile(resourceName, filePath, content)
+    if type(resourceName) ~= "string" then
+        return error("SaveResourceFile requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("SaveResourceFile requires a string [filePath] as the second argument.")
+    end
+
+    if type(content) ~= "string" then
+        return error("SaveResourceFile requires a string [content] as the third argument.")
+    end
+
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
+
+    local result = writeFile(path, content)
+
+    if not result then
+        return error("failed writing data to file: " .. path)
+    end
+end
+
+--
+-- Data File Loader
+--
+
+function LoadData(resourceName, filePath)
+    if type(resourceName) ~= "string" then
+        return error("LoadData requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("LoadData requires a string [filePath] as the second argument.")
+    end
+
+    local content = LoadResourceFile(resourceName, filePath)
+
+    if not content then
+        return {}
+    end
+
     return json.decode(content)
+end
+
+function SaveData(resourceName, filePath, data)
+    if type(resourceName) ~= "string" then
+        return error("SaveData requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("SaveData requires a string [filePath] as the second argument.")
+    end
+
+    if type(data) ~= "table" then
+        return error("SaveResourceFile requires a table [data] as the third argument.")
+    end
+
+    local content = json.encode(data, { indent = true })
+
+    SaveResourceFile(resourceName, filePath, content)
 end
 
 --
 -- Thread Tracker
---
+-- 
 
 local threads = {}
 
 function CreateThread(callback, ...)
-    if type(callback) ~= "function" then
-        return error("CreateThread requires a function [callback] as the first argument.")
+    if type(callback) ~= "function" then 
+        return error("CreateThread requires a function [callback] as the first argument.") 
     end
 
     local thread = {
@@ -350,7 +441,7 @@ function CreateThread(callback, ...)
         prevTime = GetGameTimer(),
         args = {...}
     }
-
+    
     local function Wait(waitTime)
         thread.waitTime = waitTime
         coroutine.yield(thread.coroutine)
@@ -371,17 +462,17 @@ function CreateThread(callback, ...)
     })
 
     setfenv(callback, threadMt)
-
+    
     table.insert(threads, thread)
 end
 
 function SetTimeout(callback, delay)
-    if type(callback) ~= "function" then
-        return error("SetTimeout requires a function [callback] as the first argument.")
+    if type(callback) ~= "function" then 
+        return error("SetTimeout requires a function [callback] as the first argument.") 
     end
 
-    if type(delay) ~= "number" then
-        return error("SetTimeout requires a number [delay] as the second argument.")
+    if type(delay) ~= "number" then 
+        return error("SetTimeout requires a number [delay] as the second argument.") 
     end
 
     local thread = {
@@ -390,7 +481,7 @@ function SetTimeout(callback, delay)
         prevTime = GetGameTimer(),
         kill = true
     }
-
+    
     table.insert(threads, thread)
 end
 
