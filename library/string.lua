@@ -14,8 +14,8 @@ function string:format(...)
     return string.format(self, ...)
 end
 
-function string:match(str)
-    return string.match(self, str)
+function string:match(pattern)
+    return string.match(self, pattern)
 end
 
 function string:gmatch(pattern)
@@ -35,8 +35,8 @@ function string:gsub(pattern, replace)
     return new_str
 end
 
-function string:find(str, init, plain)
-    local start_pos, end_pos = string.find(self, str, init, plain)
+function string:find(pattern, init, plain)
+    local start_pos, end_pos = string.find(self, pattern, init, plain)
     if start_pos ~= nil and end_pos ~= nil then
         return start_pos, end_pos
     else
