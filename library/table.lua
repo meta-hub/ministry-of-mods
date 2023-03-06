@@ -1,11 +1,28 @@
-local function riter(t, i)
-    i = i - 1
-    
-    if i > 0 then
-        return i, t[i]
-    end
+function table:insert(value)
+    table.insert(self, value)
 end
 
-function irpairs(t)
-    return riter, t, #t + 1
+function table:find(value)
+    for i, v in ipairs(self) do
+        if v == value then
+            return i
+        end
+    end
+    return nil
+end
+
+function table:remove(value)
+    for i, v in ipairs(self) do
+        if v == value then
+            table.remove(self, i)
+            return true
+        end
+    end
+    return false
+end
+
+function table:clear()
+    for k in pairs(self) do
+        self[k] = nil
+    end
 end
