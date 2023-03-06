@@ -1,77 +1,22 @@
---[[ -----------------
-    Required First
-]] -------------------
 _G._PATH = io.popen("cd"):read("*l")
-core = {}
+
+--
+-- Globalize JSON
+--
+
 require("library/dkjson")
 
---[[ -----------------------
-    Setup Core Variables
-]] -------------------------
+--
+-- LUA Extensions
+--
 
-function author(data)
-    if (type(data) == "string" and data ~= '') or (type(data) == "table" and data ~= {}) then
-        core.author = data
-        _G["author"] = nil
-        _G["authors"] = nil
-    else
-        return error("author or authors where are not a string or table")
-    end
-end
-authors = author
+require("library/string")
+require("library/table")
+require("library/math")
 
-function contributor(data)
-    if (type(data) == "string" and data ~= '') or (type(data) == "table" and data ~= {}) then
-        core.contributor = data
-        _G["contributor"] = nil
-        _G["contributors"] = nil
-    else
-        return error("contributor or contributors was not a string or table")
-    end
-end
-contributors = contributor
-
-function description(data)
-    if type(data) == "string" and data ~= '' then
-        core.description = data
-        _G["description"] = nil
-    else
-        return error("description was not a string")
-    end
-end
-
-function version(data)
-    if type(data) == "string" and data ~= '' then
-        core.version = data
-        _G["version"] = nil
-    else
-        return error("version was not a string")
-    end
-end
-
-function language(data)
-    if type(data) == "string" and data ~= '' then
-        core.language = data
-        _G["language"] = nil
-    else
-        return error("language was not a string")
-    end
-end
-
-function modules(data)
-    if type(data) == "table" and data ~= {} then
-        core.modules = data
-        _G["modules"] = nil
-    else
-        return error("modules is not a table")
-    end
-end
-
-require("manifest")
-
---[[ ------------------------
-    Setup File Validation
-]] --------------------------
+--
+-- File Validation
+--
 
 local function fileExists(path)
     local file = io.open(path, "r")
@@ -97,48 +42,35 @@ local function readFile(path)
     return code
 end
 
---[[ -----------------
-    JSON Load Data
-]] -------------------
+local function writeFile(path, str)
+    local file = io.open(path, "w+")
 
-function LoadData(resourceName, filePath)
-    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
-
-    if not fileExists(path) then
-        return error("invalid data file: " .. path)
+    if file == nil then
+        return nil
     end
 
-    local content = readFile(path)
+    file:write(str)
+    file:close()
 
-    if type(content) ~= "string" then
-        return error("invalid data file content: " .. path)
-    end
-
-    return json.decode(content)
+    return true
 end
 
---[[ ---------------------
-    Setup Localization
-]] -----------------------
+--
+-- Global Config
+--
 
-local locales = {}
+local globalConfigFilePath = "config.json"
 
-local function translate(self, labelName)
-    if not locales[self._RESOURCE] then
-        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. core.language .. ".json")
-    end
-
-    return locales[self._RESOURCE][labelName]
+if not fileExists(globalConfigFilePath) then
+    return error("No global config file found.")
 end
 
-local localesMt = {
-    __index = translate,
-    __call = translate
-}
+local globalConfigString = readFile(globalConfigFilePath) or "[]"
+local globalConfig = json.decode(globalConfigString)
 
---[[ -------------------------
-    Setup Exports Function
-]] ---------------------------
+--
+-- Exports
+--
 
 local exports = {}
 local exportsMt = {
@@ -148,7 +80,7 @@ local exportsMt = {
         end
 
         if not exports[resourceName] then
-            return error(string.format("No exports defined for %s. Are you sure this resource has been started?", resourceName))
+            return error(string.format("No exports defined for %s. Are you sure this resource has been started?"), resourceName)
         end
 
         return setmetatable({}, {
@@ -174,9 +106,28 @@ local exportsMt = {
     end
 }
 
---[[ ----------------
-    Setup Modules
-]] ------------------
+--
+-- Locales
+--
+
+local locales = {}
+
+local function translate(self, labelName)
+    if not locales[self._RESOURCE] then
+        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale .. ".json")
+    end
+
+    return locales[self._RESOURCE][labelName]
+end
+
+local localesMt = {
+    __index = translate,
+    __call = translate
+}
+
+--
+-- Resource Loader
+--
 
 local loadResource
 local loadedResources = {}
@@ -312,9 +263,9 @@ loadResource = function(_g, resourceName, options)
     return handleReturn(_g, resourceName, options, globalTable)
 end
 
---[[ ---------------
-    Setup Events
-]] -----------------
+--
+-- Events
+--
 
 local eventListeners = {}
 
@@ -345,7 +296,10 @@ function AddEventHandler(eventName, callback)
 
     table.insert(eventListeners[eventName], callback)
 end
---[[ --------------------------------------------------- ]]--
+
+--
+-- Native Event Handlers
+--
 
 local nativeEventListeners = {}
 local nativeListener = registerForEvent
@@ -379,7 +333,100 @@ function RegisterForEvent(eventName, callback)
 
     table.insert(nativeEventListeners[eventName], callback)
 end
---[[ --------------------------------------------------- ]]--
+
+--
+-- File Loader
+--
+
+function LoadResourceFile(resourceName, filePath)
+    if type(resourceName) ~= "string" then
+        return error("LoadResourceFile requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("LoadResourceFile requires a string [filePath] as the second argument.")
+    end
+
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
+
+    if not fileExists(path) then
+        return error("invalid data file: " .. path)
+    end
+
+    local content = readFile(path)
+
+    if type(content) ~= "string" then
+        return error("invalid data file content: " .. path)
+    end
+
+    return content
+end
+
+function SaveResourceFile(resourceName, filePath, content)
+    if type(resourceName) ~= "string" then
+        return error("SaveResourceFile requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("SaveResourceFile requires a string [filePath] as the second argument.")
+    end
+
+    if type(content) ~= "string" then
+        return error("SaveResourceFile requires a string [content] as the third argument.")
+    end
+
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
+
+    local result = writeFile(path, content)
+
+    if not result then
+        return error("failed writing data to file: " .. path)
+    end
+end
+
+--
+-- Data File Loader
+--
+
+function LoadData(resourceName, filePath)
+    if type(resourceName) ~= "string" then
+        return error("LoadData requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("LoadData requires a string [filePath] as the second argument.")
+    end
+
+    local content = LoadResourceFile(resourceName, filePath)
+
+    if not content then
+        return {}
+    end
+
+    return json.decode(content)
+end
+
+function SaveData(resourceName, filePath, data)
+    if type(resourceName) ~= "string" then
+        return error("SaveData requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("SaveData requires a string [filePath] as the second argument.")
+    end
+
+    if type(data) ~= "table" then
+        return error("SaveResourceFile requires a table [data] as the third argument.")
+    end
+
+    local content = json.encode(data, { indent = true })
+
+    SaveResourceFile(resourceName, filePath, content)
+end
+
+--
+-- Thread Tracker
+--
 
 local threads = {}
 
@@ -468,10 +515,22 @@ nativeListener("update", function(deltaTime)
     end
 end)
 
---[[ ---------------
-    Load Modules
-]] -----------------
+--
+-- Resource Initialization
+--
 
-for _,resourceDef in ipairs(core.modules) do
+local initResourceFilePath = "resources.json"
+
+if not fileExists(initResourceFilePath) then
+    return error("resources.json is not present in root directory")
+end
+
+local initResources = json.decode(readFile(initResourceFilePath) or "")
+
+if type(initResources) ~= "table" then
+    return error("failed to parse resources.json file")
+end
+
+for _,resourceDef in ipairs(initResources) do
     loadResource(_G, resourceDef.name, resourceDef.options or {})
 end

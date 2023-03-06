@@ -1,0 +1,17 @@
+[
+    {
+        "name": "chatcommand"
+    },
+    {
+        "name": "discord"
+    },
+    {
+        "name": "world"
+    },
+    {
+        "name": "player"
+    },
+    {
+        "name": "npcs"
+    }
+]
