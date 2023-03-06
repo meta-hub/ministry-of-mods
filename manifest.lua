@@ -8,6 +8,7 @@ description 'Ministry of Mods is a ...'
 version '1.0.0'
 
 modules {
+    {name = "chatcommand"},
     {name = "discord", options = {version = nil, env = nil}},
     {name = "world"},
     {name = "player"},

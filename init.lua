@@ -68,7 +68,6 @@ function modules(data)
 end
 
 require("manifest")
-print(json.encode(core, {indent = true}))
 
 --[[ ------------------------
     Setup File Validation
