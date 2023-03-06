@@ -18,30 +18,25 @@ local PlayerHouses = {
 
 ]]
 
-local function writePlayerData(playerData)
-    local file = io.open(_PATH .. "/data/" .. "playerdata.json", "r")
-    if file then
-        local existingData = json.decode(file:read("*all"))
-        file:close()
-        for key, value in pairs(playerData) do
-            if not existingData[key] then
-                existingData[key] = value
-            end
-        end
-        file = io.open(_PATH .. "/data/" .. "playerdata.json", "w")
-        if file then
-            file:write(json.encode(existingData))
-            file:close()
-        end
+local function savePlayerData(Player, Data)
+    local path = _PATH .. "/data/playerdata.json"
+    local existingData = {}
+    if fileExists(path) then
+        existingData = json.decode(readFile(path))
     end
+    existingData[tostring(Player.id)] = Data
+    local success = writeFile(path, json.encode(existingData))
+    return success
 end
 
-local function readPlayerData()
-    local file = io.open(_PATH .. "/data/" .. "playerdata.json", "r")
-    if file then
-        local data = json.decode(file:read("*all"))
-        file:close()
-        return data
+local function getPlayerData(Player)
+    local path = _PATH .. "/data/playerdata.json"
+
+    if fileExists(path) then
+        local existingData = json.decode(readFile(path))
+        return existingData[tostring(Player.id)]
+    else
+        return nil
     end
 end
 
@@ -55,14 +50,12 @@ local function otherLogs()
 end
 
 local function Track(Player, Joined)
-    local getPlayerData = readPlayerData()
-    local stringId = tostring(Player.id)
-    if not getPlayerData[stringId] then
+    local PlayerData = getPlayerData(Player)
+    if not PlayerData then
         print("player doesn't exist")
-        local tempTable = {[stringId] = Config.defaultPlayerTable}
-        writePlayerData(tempTable)
+        savePlayerData(Player, {gold = 100})
     else
-        print(getPlayerData[stringId]["gold"])
+        print(PlayerData.gold)
     end
 
     if Joined then

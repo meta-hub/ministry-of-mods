@@ -1,7 +1,7 @@
 Config = {}
 
 Config.DefaultPermissions = {
-    [identifier] = "admin"
+    ["identifier"] = "admin"
 }
 
 Config.Prefix = "/"
