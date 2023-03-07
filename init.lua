@@ -12,7 +12,7 @@ require("library/dkjson")
 
 require("library/string")
 require("library/table")
-require("library/math")
+require("library/number")
 
 --
 -- File Validation

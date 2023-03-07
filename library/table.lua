@@ -14,8 +14,8 @@ function table:remove(pos)
     return table.remove(self, pos)
 end
 
-function table:sort(decending)
-    if decending then
+function table:sort(decen)
+    if decen then
         return table.sort(self, function(a, b) return a > b end)
     else
         return table.sort(self)

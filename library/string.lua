@@ -15,13 +15,13 @@
 -- string.char(...)
 -- string.dump(function)
 
-function string:split(separator, useIter)
-    if useIter then
-        local pattern = separator:format("([^%s]+)")
+function string:split(sep, iter)
+    if iter then
+        local pattern = sep:format("([^%s]+)")
         return self:gmatch(pattern)
     else
         local result = {}
-        local pattern = separator:format("([^%s]+)")
+        local pattern = sep:format("([^%s]+)")
         for token in self:gmatch(pattern) do
             table.insert(result, token)
         end
