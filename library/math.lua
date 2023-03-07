@@ -1,13 +1,30 @@
-function math.pointOnSphere(alt, azu, rad, orgX, orgY, orgZ)
-    alt = alt and tonumber(alt) or 0
-    azu = azu and tonumber(azu) or 0
-    rad = rad and tonumber(rad) or 0
-
-    orgX = orgX and tonumber(orgX) or 0
-    orgY = orgY and tonumber(orgY) or 0
-    orgZ = orgZ and tonumber(orgZ) or 0
-
-    return  orgX + rad * math.sin( azu ) * math.cos( alt ),
-            orgY + rad * math.cos( azu ) * math.cos( alt ),
-            orgZ + rad * math.sin( alt )
-end
+-- math:abs (x)
+-- math:acos (x)
+-- math:asin (x)
+-- math:atan (x)
+-- math:atan2 (y, x)
+-- math:ceil (x)
+-- math:cos (x)
+-- math:cosh (x)
+-- math:deg (x)
+-- math:exp (x)
+-- math:floor (x)
+-- math:fmod (x, y)
+-- math:frexp (x)
+-- math:huge
+-- math:ldexp (m, e)
+-- math:log (x)
+-- math:log10 (x)
+-- math:max (x, ···)
+-- math:min (x, ···)
+-- math:modf (x)
+-- math:pi
+-- math:pow (x, y)
+-- math:rad (x)
+-- math:random ([m [, n]])
+-- math:randomseed (x)
+-- math:sin (x)
+-- math:sinh (x)
+-- math:sqrt (x)
+-- math:tan (x)
+-- math:tanh (x)

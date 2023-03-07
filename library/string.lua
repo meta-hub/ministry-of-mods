@@ -1,17 +1,19 @@
--- string:byte (s [, i [, j]])
--- string:char (···)
--- string:dump (function)
--- string:find (s, pattern [, init [, plain]])
--- string:format (formatstring, ···)
--- string:gmatch (s, pattern)
--- string:gsub (s, pattern, repl [, n])
--- string:len (s)
--- string:lower (s)
--- string:match (s, pattern [, init])
--- string:rep (s, n)
--- string:reverse (s)
--- string:sub (s, i [, j])
--- string:upper (s)
+-- string:byte(i [, j])
+-- string:find(pattern [, init [, plain]])
+-- string:format(formatstring, ...)
+-- string:gmatch(pattern)
+-- string:gsub(pattern, replace [, n])
+-- string:lower()
+-- string:match(pattern [, init])
+-- string:rep(n [, sep])
+-- string:reverse()
+-- string:sub(i [, j])
+-- string:upper()
+
+-- string:len() [[DEPRICATED - USE #]]
+
+-- string.char(...)
+-- string.dump(function)
 
 function string:split(separator, useIter)
     if useIter then
