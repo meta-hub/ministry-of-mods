@@ -137,14 +137,36 @@ We can now access this resources functions as defined within the resource:
 myModule.foo()
 ```
 
-### Loading Data
+### Loading & Saving Data
 
 The `LoadData` function has been provided to load json data files.
-You can load data files from any resource.
+The `SaveData` function has been provided to save a table as json.
+You can load and save data files from any resource.
 
 ```lua
 -- This example will load the file `modules/myModule/data/myData.json` into a table.
 local myData = LoadData("myModule", "data/myData.json")
+
+-- This example will save the example table into the file `modules/myModule/data/myData.json`.
+local exampleTable = { foo = "bar" }
+
+SaveData("myModule", "data/myData.json", exampleTable)
+```
+
+### Loading & Saving Files
+
+The `LoadResourceFile` function has been provided to load a string from file.
+The `SaveResourceFile` function has been provided to save a string into a file.
+You can load and save resource files from any resource.
+
+```lua
+-- This example will load the file `data/version.txt`.
+local version = LoadResourceFile("myModule", "data/version.txt")
+
+-- This example will save the example string into the file `modules/myModule/data/version.txt`.
+local exampleString = "1.0.0"
+
+SaveResourceFile("myModule", "data/version.txt", exampleString)
 ```
 
 ### Versioning
