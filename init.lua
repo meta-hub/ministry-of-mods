@@ -1,8 +1,18 @@
+_G._PATH = io.popen("cd"):read("*l")
+
 --
 -- Globalize JSON
 --
 
 require("dependencies/json")
+
+--
+-- LUA Extensions
+--
+
+require("dependencies/string")
+require("dependencies/table")
+require("dependencies/math")
 
 --
 -- File Validation
@@ -30,6 +40,19 @@ local function readFile(path)
     file:close()
 
     return code
+end
+
+local function writeFile(path, str)
+    local file = io.open(path, "w+")
+
+    if file == nil then
+        return nil
+    end
+
+    file:write(str)
+    file:close()
+
+    return true
 end
 
 --
@@ -91,7 +114,7 @@ local locales = {}
 
 local function translate(self, labelName)
     if not locales[self._RESOURCE] then
-        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale)
+        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale .. ".json")
     end
 
     return locales[self._RESOURCE][labelName]
@@ -116,13 +139,12 @@ local loadResourceMt = {
 
 local function createEnvironment(resourceName, version)
     local _g = {}
-    local _gProxy = { _RESOURCE = resourceName, _g = _g }
 
     _g._RESOURCE    = resourceName
     _g._VERSION     = version
-    _g.LoadResource = setmetatable(_gProxy, loadResourceMt)
-    _g.Exports      = setmetatable(_gProxy, exportsMt)
-    _g.Locale       = setmetatable(_gProxy, localesMt)
+    _g.LoadResource = setmetatable({ _g = _g }, loadResourceMt)
+    _g.Exports      = setmetatable({ _RESOURCE = resourceName }, exportsMt)
+    _g.Locale       = setmetatable({ _RESOURCE = resourceName }, localesMt)
 
     local env = {}
 
@@ -184,7 +206,7 @@ loadResource = function(_g, resourceName, options)
     options = options or {}
 
     local versionPath = options.version and ("/" .. options.version) or ""
-    local resourcePath = "modules/" .. resourceName .. versionPath
+    local resourcePath = _PATH .. "/modules/" .. resourceName .. versionPath
     local entryFilePath = resourcePath .. "/resource.json"
 
     if not fileExists(entryFilePath) then
@@ -313,11 +335,19 @@ function RegisterForEvent(eventName, callback)
 end
 
 --
--- JSON Data Loader
+-- File Loader
 --
 
-function LoadData(resourceName, filePath)
-    local path = "modules/" .. resourceName .. "/" .. filePath
+function LoadResourceFile(resourceName, filePath)
+    if type(resourceName) ~= "string" then
+        return error("LoadResourceFile requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("LoadResourceFile requires a string [filePath] as the second argument.")
+    end
+
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
 
     if not fileExists(path) then
         return error("invalid data file: " .. path)
@@ -329,7 +359,69 @@ function LoadData(resourceName, filePath)
         return error("invalid data file content: " .. path)
     end
 
+    return content
+end
+
+function SaveResourceFile(resourceName, filePath, content)
+    if type(resourceName) ~= "string" then
+        return error("SaveResourceFile requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("SaveResourceFile requires a string [filePath] as the second argument.")
+    end
+
+    if type(content) ~= "string" then
+        return error("SaveResourceFile requires a string [content] as the third argument.")
+    end
+
+    local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
+
+    local result = writeFile(path, content)
+
+    if not result then
+        return error("failed writing data to file: " .. path)
+    end
+end
+
+--
+-- Data File Loader
+--
+
+function LoadData(resourceName, filePath)
+    if type(resourceName) ~= "string" then
+        return error("LoadData requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("LoadData requires a string [filePath] as the second argument.")
+    end
+
+    local content = LoadResourceFile(resourceName, filePath)
+
+    if not content then
+        return {}
+    end
+
     return json.decode(content)
+end
+
+function SaveData(resourceName, filePath, data)
+    if type(resourceName) ~= "string" then
+        return error("SaveData requires a string [resourceName] as the first argument.")
+    end
+
+    if type(filePath) ~= "string" then
+        return error("SaveData requires a string [filePath] as the second argument.")
+    end
+
+    if type(data) ~= "table" then
+        return error("SaveResourceFile requires a table [data] as the third argument.")
+    end
+
+    local content = json.encode(data, { indent = true })
+
+    SaveResourceFile(resourceName, filePath, content)
 end
 
 --
