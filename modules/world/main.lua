@@ -1,15 +1,14 @@
-local Lang = LoadResource("locales").Fetch()
-
+local world = server.world
 local SyncTick, WeatherTick, SecondTick = 0, 0, 0
 local FreezeTime, FreezeWeather = Config.Settings.FreezeTime, Config.Settings.FreezeWeather
 local WorldData = {}
 
 -- ConnectToEvents
-registerForEvent("init", function()
+RegisterForEvent("init", function()
     Initiate()
 end)
 
-registerForEvent("update", function(DeltaTime)
+CreateThread(function(DeltaTime)
     Update(DeltaTime)
 end)
 
@@ -185,16 +184,8 @@ function WorldSync()
 
     world:RpcSet()
 
-    if Config.Settings.PrintWorldSync then
-        local xh,xmi,xs,xd,xmo,xy = WorldData["hour"], WorldData["minute"], WorldData["second"], WorldData["day"], WorldData["month"], WorldData["year"]
-        local TimeFormat = xh .. ":" .. xmi .. ":" .. xs
-        local DateFormat = xd .. "/" .. xmo .. "/" .. xy
-
-        print(Lang.world_sync .. TimeFormat .. " - " .. DateFormat )
-    end
-
     if Config.DiscordLogs then
-        Exports.discord.LogToDiscord("world", Lang.world_sync_title, {r = 165, g = 165, b = 165}, Lang.world_sync_message, false)
+        Exports.discord.LogToDiscord("world", Locale.world_sync_title, {r = 165, g = 165, b = 165}, Locale.world_sync_message, false)
     end
 end
 

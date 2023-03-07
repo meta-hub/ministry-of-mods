@@ -27,9 +27,9 @@ function LogToDiscord(name, title, color, message, tagEveryone)
         }}
     })
 
-    -- print(webhook.webhook, data)
+    print(webhook.webhook, data)
 
-    --[[local succes, response = pcall(function()
+    --[[local succes, response, header = pcall(function()
 		return --REQUIRED HTTP REQUEST
 	end)
 	if not succes then

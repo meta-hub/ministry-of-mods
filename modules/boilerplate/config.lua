@@ -1,5 +1,5 @@
 local config = {
-    Locale = "en"
+    foo = "bar"
 }
 
 _ENV.Config = config

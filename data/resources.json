@@ -1,11 +1,14 @@
 [
     {
+        "name": "discord"
+    },
+    {
         "name": "world"
     },
     {
         "name": "player"
     },
     {
-        "name": "discord"
+        "name": "npcs"
     }
 ]

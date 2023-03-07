@@ -1,25 +1,25 @@
 local PlayersTable = {}
 
 local PlayerGenders = {
-    [0] = Lang.gen_m,
-    [1] = Lang.gen_f,
-    [2] = Lang.gen_u,
+    [0] = Locale.gen_m,
+    [1] = Locale.gen_f,
+    [2] = Locale.gen_u,
 }
 
 local PlayerHouses = {
-    [0] = Lang.house_g,
-    [1] = Lang.house_h,
-    [2] = Lang.house_r,
-    [3] = Lang.house_s,
-    [4] = Lang.house_u,
+    [0] = Locale.house_g,
+    [1] = Locale.house_h,
+    [2] = Locale.house_r,
+    [3] = Locale.house_s,
+    [4] = Locale.house_u,
 }
 
 -- ConnectToEvents
-registerForEvent("player_joined", function(Player)
+RegisterForEvent("player_joined", function(Player)
     Track(Player, true)
 end)
 
-registerForEvent("player_left", function(Player)
+RegisterForEvent("player_left", function(Player)
     Track(Player, false)
 end)
 
@@ -34,14 +34,14 @@ function Track(Player, Joined)
             movement = Player.movement
         })
         if Config.DiscordLogs then
-            Exports.discord.LogToDiscord("player", Lang.player_join_title, {r = 165, g = 165, b = 165}, string.format(Lang.player_join_message, Player.id), false)
+            Exports.discord.LogToDiscord("player", Locale.player_join_title, {r = 165, g = 165, b = 165}, string.format(Locale.player_join_message, Player.id), false)
         end
     else
         for i,v in pairs(PlayersTable) do
             if v.id == Player.id then
                 table.remove(PlayersTable, i)
                 if Config.DiscordLogs then
-                    Exports.discord.LogToDiscord("player", Lang.player_left_title, {r = 165, g = 165, b = 165}, string.format(Lang.player_left_message, Player.id), false)
+                    Exports.discord.LogToDiscord("player", Locale.player_left_title, {r = 165, g = 165, b = 165}, string.format(Locale.player_left_message, Player.id), false)
                 end
             end
         end
@@ -82,11 +82,11 @@ function countHouses()
 end
 
 function otherLogs()
-    local message = Lang.current_players_title .. string.format(Lang.current_players_message, countPlayers()) .. "\n"
-        .. Lang.gender_count_title .. "\n```" .. json.encode(countGenders(), {indent = true}) .. "```\n"
-        .. Lang.house_count_title .. "\n```" .. json.encode(countHouses(), {indent = true}) .. "```"
+    local message = Locale.current_players_title .. string.format(Locale.current_players_message, countPlayers()) .. "\n"
+        .. Locale.gender_count_title .. "\n```" .. json.encode(countGenders(), {indent = true}) .. "```\n"
+        .. Locale.house_count_title .. "\n```" .. json.encode(countHouses(), {indent = true}) .. "```"
 
-    Exports.discord.LogToDiscord("player", Lang.other_logs_title, {r = 165, g = 165, b = 165}, message, false)
+    Exports.discord.LogToDiscord("player", Locale.other_logs_title, {r = 165, g = 165, b = 165}, message, false)
 end
 
 -- Exports
