@@ -11,3 +11,13 @@ function math.pointOnSphere(alt, azu, rad, orgX, orgY, orgZ)
             orgY + rad * math.cos( azu ) * math.cos( alt ),
             orgZ + rad * math.sin( alt )
 end
+
+function math.sign(n)
+    return n >= 0 and 1 or -1
+end
+
+function math.round(n, bracket)
+    bracket = bracket or 1
+
+    return math.floor(n / bracket + math.sign(n) * 0.5) * bracket
+end
