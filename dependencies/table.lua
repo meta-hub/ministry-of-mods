@@ -69,3 +69,9 @@ function table:len()
 
     return n
 end
+
+function table:clear()
+    for k,v in pairs(self) do
+        self[k] = nil
+    end
+end
