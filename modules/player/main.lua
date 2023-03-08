@@ -14,7 +14,7 @@ local PlayerHouses = {
     [4] = Locale.house_u,
 }
 
-local DATA_FILE = _PATH .. "/data/playerdata.json"
+local DATA_FILE = _PATH .. "/modules/player/data/playerdata.json"
 
 local playerData = {}
 
