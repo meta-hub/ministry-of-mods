@@ -4,7 +4,11 @@ _G._PATH = io.popen("cd"):read("*l")
 -- Globalize JSON
 --
 
+<<<<<<< Updated upstream
 require("library/dkjson")
+=======
+require("library/json")
+>>>>>>> Stashed changes
 
 --
 -- LUA Extensions
@@ -12,7 +16,11 @@ require("library/dkjson")
 
 require("library/string")
 require("library/table")
+<<<<<<< Updated upstream
 require("library/number")
+=======
+require("library/math")
+>>>>>>> Stashed changes
 
 --
 -- File Validation

@@ -1,11 +1,16 @@
 # Discord Module
 
-This module at the moment **IS NOT FUNCTIONAL**.
-- This *will* manage discord logging
+This module at the moment **IS NOT FUNCTIONAL**
+- This *will* manage the discord webhook
 
 ## For Developers
 
-This is for example purposes and does not need to be set up as such. Values can be put directly into the export!
+### Exports
+```LUA
+    Exports.discord.LogToDiscord(name, title, color, message, tagEveryone)
+```
+
+### Example
 ```LUA
     local name = "player" -- This is the name of the Webhook found in Config
     local title = "" -- This is if you wish to include a title

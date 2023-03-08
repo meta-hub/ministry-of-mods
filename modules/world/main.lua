@@ -1,8 +1,18 @@
 local world = server.world
+local WorldData = {
+    hour = world.hour,
+    minute = world.minute,
+    second = world.second,
+    year = world.year,
+    month = world.month,
+    day = world.day,
+    season = world.season,
+    weather = world.weather,
+}
 local SyncTick, WeatherTick, SecondTick = 0, 0, 0
-local FreezeTime, FreezeWeather = Config.Settings.FreezeTime, Config.Settings.FreezeWeather
-local WorldData = {}
+local FreezeTime, FreezeWeather = Config.Time.FreezeTime, Config.Weather.FreezeWeather
 
+<<<<<<< Updated upstream
 -- Functions
 local function get_days_in_month(month, year)
     local days_in_month = {31,28,31,30,31,30,31,31,30,31,30,31}
@@ -18,11 +28,36 @@ local function get_days_in_month(month, year)
                 d = 29
             end
         end
-    end
+=======
+--[[
+    Functions
+]]
 
-    return d
+function syncWorld()
+    print("World Syncing")
+    for i,v in pairs(WorldData) do
+        world[i] = v
+>>>>>>> Stashed changes
+    end
+    world:RpcSet()
 end
 
+function newWeather()
+    local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData.month]]
+    WorldData.weather = Config.WeatherTypes[math.random(1,#Config.WeatherSystems[getSeason])]
+    syncWorld()
+end
+
+function daysInMonth(month, year)
+    local days_in_month = {31,28,31,30,31,30,31,31,30,31,30,31}
+    if month == 2 then
+        return year % 4 == 0 and (year % 100 ~= 0 or year % 400 == 0) and 29 or 28
+    else
+        return days_in_month[month]
+    end
+end
+
+<<<<<<< Updated upstream
 local function WorldSync()
     for i,v in pairs(WorldData) do
         world[i] = v
@@ -59,130 +94,112 @@ local function Initiate()
         if Config.Time.hour >= 0 and Config.Time.hour <= 23 then
             WorldData["hour"] = math.floor(Config.Time.hour)
         end
+=======
+function Initiate()
+    local time = Config.Time
+    local weather = Config.Weather
+    if type(time.hour) == "number" and time.hour >= 0 and time.hour <= 23 then
+        WorldData.hour = math.floor(time.hour)
+>>>>>>> Stashed changes
     end
-
-    if type(Config.Time.minute) == "number" then
-        if Config.Time.minute >= 0 and Config.Time.minute <= 59 then
-            WorldData["minute"] = math.floor(Config.Time.minute)
-        end
+    if type(time.minute) == "number" and time.minute >= 0 and time.minute <= 59 then
+        WorldData.minute = math.floor(time.minute)
     end
-
-    if type(Config.Time.second) == "number" then
-        if Config.Time.second >= 0 and Config.Time.second <= 59 then
-            WorldData["second"] = math.floor(Config.Time.second)
-        end
+    if type(time.second) == "number" and time.second >= 0 and time.second <= 59 then
+        WorldData.second = math.floor(time.second)
     end
-
-    if type(Config.Time.year) == "number" then
-        WorldData["year"] = math.floor(Config.Time.year)
+    if type(time.year) == "number" then
+        WorldData.year = math.floor(time.year)
     end
-
-    if type(Config.Time.month) == "number" then
-        if Config.Time.month >= 1 and Config.Time.month <= 12 then
-            WorldData["month"] = math.floor(Config.Time.month)
-        end
+    if type(time.month) == "number" and time.month >= 1 and time.month <= 12 then
+        WorldData.month = math.floor(time.month)
     end
-
-    if type(Config.Time.day) == "number" then
-        if Config.Time.day >= 1 and Config.Time.day <= 31 then
-            WorldData["day"] = math.floor(Config.Time.day)
-        end
+    if type(time.day) == "number" and time.day >= 1 and time.day <= 31 then
+        WorldData.day = math.floor(time.day)
     end
-
-    if type(Config.Weather.season) == "number" then
-        if Config.SeasonTypes[Config.Weather.season] then
-            WorldData["season"] = math.floor(Config.Weather.season)
-        end
+    if type(weather.season) == "number" and Config.SeasonTypes[weather.season] then
+        WorldData.season = math.floor(weather.season)
     end
-
-    if type(Config.Weather.weather) == "string" then
-        for i,v in pairs(Config.WeatherTypes) do
-            if v == Config.Weather.weather then
-                WorldData["weather"] = Config.Weather.weather
-            end
-        end
-    end
-
-    if Config.Settings.UseOSTime then
-        WorldData["hour"] = tonumber(os.date("%H"))
-        WorldData["minute"] = tonumber(os.date("%M"))
-        WorldData["second"] = tonumber(os.date("%S"))
-        WorldData["year"] = tonumber(os.date("%Y"))
-        WorldData["month"] = tonumber(os.date("%m"))
-        WorldData["day"] = tonumber(os.date("%d"))
-
-        WorldData["season"] = Config.SeasonTable[WorldData["month"]]
-
-        NewWeather()
+    if type(weather.weather) == "string" and Config.WeatherTypes[weather.weather] then
+        WorldData.weather = weather.weather
     end
 end
 
+<<<<<<< Updated upstream
 local function Update(Delta)
     SecondTick = SecondTick + Delta
+=======
+function Update(Delta)
+>>>>>>> Stashed changes
     SyncTick = SyncTick + Delta
+    SecondTick = SecondTick + Delta
     WeatherTick = WeatherTick + Delta
 
     if not FreezeTime then
-        if Config.Settings.UseOSTime then
-            WorldData["hour"] = tonumber(os.date("%H"))
-            WorldData["minute"] = tonumber(os.date("%M"))
-            WorldData["second"] = tonumber(os.date("%S"))
-            WorldData["year"] = tonumber(os.date("%Y"))
-            WorldData["month"] = tonumber(os.date("%m"))
-            WorldData["day"] = tonumber(os.date("%d"))
+        if Config.Time.UseOSTime then
+            local date = os.date("*t")
+            WorldData.hour = tonumber(date.hour)
+            WorldData.minute = tonumber(date.min)
+            WorldData.second = tonumber(date.sec)
+            WorldData.year = tonumber(date.year)
+            WorldData.month = tonumber(date.month)
+            WorldData.day = tonumber(date.day)
         else
             if SecondTick > 1 then
                 SecondTick = SecondTick - 1
-                WorldData["second"] = WorldData["second"] + 1
-                WorldData["minute"] = WorldData["minute"] + Config.Settings.MinutesPerSecond
+                WorldData.minute = WorldData.minute + Config.Settings.MinutesPerSecond
+                WorldData.second = WorldData.second + 1
             end
-
-            if WorldData["second"] > 59 then
-                WorldData["second"] = WorldData["second"] - 59
-                WorldData["minute"] = WorldData["minute"] + 1
+            if WorldData.second > 59 then
+                WorldData.second = WorldData.second - 60
+                WorldData.minute = WorldData.minute + 1
             end
-
-            if WorldData["minute"] > 59 then
-                WorldData["minute"] = WorldData["minute"] - 59
-                WorldData["hour"] = WorldData["hour"] + 1
+            if WorldData.minute > 59 then
+                WorldData.minute = WorldData.minute - 60
+                WorldData.hour = WorldData.hour + 1
             end
-
-            if WorldData["hour"] > 23 then
-                WorldData["hour"] = 0
-                WorldData["day"] = WorldData["day"] + 1
+            if WorldData.hour > 23 then
+                WorldData.hour = 0
+                WorldData.day = WorldData.day + 1
             end
-
-            if WorldData["day"] > get_days_in_month(WorldData["month"], WorldData["year"]) then
-                WorldData["day"] = 1
-                WorldData["month"] = WorldData["month"] + 1
+            if WorldData.day > daysInMonth(WorldData.month, WorldData.year) then
+                WorldData.day = 1
+                WorldData.month = WorldData.month + 1
             end
-
-            if WorldData["month"] > 12 then
-                WorldData["month"] = 1
-                WorldData["year"] = WorldData["year"] + 1
+            if WorldData.month > 12 then
+                WorldData.month = 1
+                WorldData.year = WorldData.year + 1
             end
         end
     end
-
     if not FreezeWeather then
-        WorldData["season"] = Config.SeasonTable[WorldData["month"]]
+        WorldData.season = Config.SeasonTable[WorldData.month]
         if WeatherTick > Config.Settings.RandomWeatherTimer then
             WeatherTick = WeatherTick - Config.Settings.RandomWeatherTimer
-
-            NewWeather()
+            newWeather()
         end
     end
-
     if SyncTick > Config.Settings.SyncTimer then
         SyncTick = SyncTick - Config.Settings.SyncTimer
-
-        WorldSync()
+        syncWorld()
     end
 end
 
+<<<<<<< Updated upstream
 -- Exports
 
 Exports("SetWorldData", function(DataTable)
+=======
+
+--[[
+    Exports Functions
+]]
+function getWorldData()
+    return WorldData
+end
+
+function setWorldData(DataTable)
+>>>>>>> Stashed changes
     if type(DataTable) == "table" then
         for i,v in pairs(Data) do
             if Config.Time[i] or Config.Weather[i] then
@@ -190,11 +207,9 @@ Exports("SetWorldData", function(DataTable)
             end
         end
     end
-end)
+end
 
-Exports("SyncWorldData", WorldSync)
-
-Exports("FreezeTime", function(state)
+function freezeTime(state)
     if type(state) == "boolean" then
         FreezeTime = state
     else
@@ -204,9 +219,9 @@ Exports("FreezeTime", function(state)
             FreezeTime = true
         end
     end
-end)
+end
 
-Exports("FreezeWeather", function(state)
+function freezeWeather(state)
     if type(state) == "boolean" then
         FreezeWeather = state
     else
@@ -216,6 +231,7 @@ Exports("FreezeWeather", function(state)
             FreezeWeather = true
         end
     end
+<<<<<<< Updated upstream
 end)
 
 Exports("GetWorldData", function()
@@ -223,10 +239,40 @@ Exports("GetWorldData", function()
 end)
 
 -- ConnectToEvents
+=======
+end
+
+--[[
+    Exports
+]]
+
+Exports("syncWorld", syncWorld)
+Exports("getWorldData", getWorldData)
+Exports("setWorldData", setWorldData)
+Exports("freezeTime", freezeTime)
+Exports("freezeWeather", freezeWeather)
+
+--[[
+    Events
+]]
+
+>>>>>>> Stashed changes
 RegisterForEvent("init", function()
     Initiate()
 end)
 
+<<<<<<< Updated upstream
 CreateThread(function(DeltaTime)
     Update(DeltaTime)
+=======
+CreateThread(function()
+    local prevTime = GetGameTimer()
+    while true do
+        Wait(0)
+        local timeNow = GetGameTimer()
+        local deltaTime = (timeNow - prevTime) / 1000
+        prevTime = timeNow
+        Update(deltaTime)
+    end
+>>>>>>> Stashed changes
 end)

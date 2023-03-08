@@ -1,17 +1,19 @@
 # World Module
 
-This module at the moment regulates the world
-- Optional Print for when the World Syncs,
-- Optional Use your local time in-game
-- Freeze Time and or Weather ( So it never changes )
-- Set how often the world syncs between players,
-- Set how often the world changes the weather,
-- Make time move faster per second
-- Fully config starting Time and Weather
+This module regulates the world
 
 ## For Developers
 
-For those who need to control weather outside of this resource, use
+### Exports
+```LUA
+    Exports.world.syncWorld()
+    Exports.world.getWorldData()
+    Exports.world.setWorldData(table)
+    Exports.world.freezeTime(bool)
+    Exports.world.freezeWeather(bool)
+```
+
+### Examples
 ```LUA
     local ExampleTable = {
         hour = 12,
@@ -24,6 +26,7 @@ For those who need to control weather outside of this resource, use
         --weather = "Astronomy"
     }
 
+<<<<<<< Updated upstream
     Exports.world.SetWorldData(ExampleTable)
 
     Exports.world.SyncWorldData() -- Forces the world to sync between players
@@ -32,4 +35,14 @@ For those who need to control weather outside of this resource, use
     Exports.world.FreezeTime() -- Forces the time to unfreeze
     Exports.world.FreezeWeather() -- Forces the weather to freeze
     Exports.world.GetWorldData() -- Get the current world's data
+=======
+    Exports.world.setWorldData(ExampleTable)
+
+    Exports.world.syncWorld() -- Forces the world to sync between players
+
+    -- EXAMPLE: If FreezeTime is on and you execute the trigger below, it will turn it off and vice versa. Same applies to Freeze Weather. Can include a BOOL to force a state.
+    Exports.world.freezeTime(true) -- Forces the time to unfreeze
+    Exports.world.freezeWeather() -- Forces the weather to freeze
+    Exports.world.getWorldData() -- Get the current world's data
+>>>>>>> Stashed changes
 ```

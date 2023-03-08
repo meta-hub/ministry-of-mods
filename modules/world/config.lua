@@ -1,17 +1,14 @@
 Config = {}
 
-Config.DiscordLogs = true
-
 Config.Settings = {
-    UseOSTime = true, -- if you want to use OS time
-    FreezeTime = false, -- Forces the Time & Date to stay at the values below
-    FreezeWeather = false, -- Forces the Weather to stay at the values below
     SyncTimer = 30, -- How long before before the server forces a sync (Seconds)
-    RandomWeatherTimer = 1200, -- How long before the server changes the weather (Seconds)
+    RandomWeatherTimer = 300, -- How long before the server changes the weather (Secon1ds)
     MinutesPerSecond = 5, -- Every second adds the given number to minutes
 }
 
 Config.Time = { -- False values ignore the variable/setting (meaning it doesn't set anything)
+    FreezeTime = false, -- Forces the Time & Date to freeze
+    UseOSTime = false, -- if you want to use OS time (ignores all time settings below)
     hour = false, -- Must be between 1 & 23
     minute = false, -- Must be between 1 & 59
     second = false, -- Must be between 1 & 59
@@ -21,6 +18,7 @@ Config.Time = { -- False values ignore the variable/setting (meaning it doesn't 
 }
 
 Config.Weather = { -- False values ignore the variable/setting (meaning it doesn't set anything)
+    FreezeWeather = false, -- Forces the Weather to freeze
     season = false, -- Must be a number in the SeasonTypes below (EXAMPLE: season = 2)
     weather = false, -- Must be text, reference the WeatherTypes below (EXAMPLE: weather = "Overcast_Heavy_Winter_01",)
 }
@@ -29,12 +27,7 @@ Config.Weather = { -- False values ignore the variable/setting (meaning it doesn
     Do not touch anything below unless you know what you are doing!
 ]]
 
-Config.Seasons = {
-    ["Spring"] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,27,28,29,30},
-    ["Summer"] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,27,28,29,30,34},
-    ["Fall"] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,27,28,29,30},
-    ["Winter"] = {3,16,23,24,25,26,31,32,33},
-}
+Config.SeasonTable = {2,2,4,4,4,1,1,1,3,3,3,2}
 
 Config.SeasonTypes = {
     [1] = "Summer",
@@ -43,7 +36,12 @@ Config.SeasonTypes = {
     [4] = "Spring",
 }
 
-Config.SeasonTable = {2,2,4,4,4,1,1,1,3,3,3,2}
+Config.WeatherSystems = {
+    Spring = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,27,28,29,30},
+    Summer = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,27,28,29,30,34},
+    Fall = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,27,28,29,30},
+    Winter = {3,16,23,24,25,26,31,32,33},
+}
 
 Config.WeatherTypes = {
     [1] = "Announce",

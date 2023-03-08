@@ -14,6 +14,7 @@ local PlayerHouses = {
     [4] = Locale.house_u,
 }
 
+<<<<<<< Updated upstream
 --[[
 
 ]]
@@ -84,13 +85,72 @@ local function countGenders()
         local genderName = PlayerGenders[v.gender]
         if not tempData[genderName] then
             tempData[genderName] = 1
+=======
+local DATA_FILE = _PATH .. "/data/playerdata.json"
+
+local playerData = {}
+
+--[[
+    Functions
+]]
+
+function loadPlayerData(Player)
+    if fileExists(DATA_FILE) then
+        local existingData = json.decode(readFile(DATA_FILE))
+        local playerID = tostring(Player.id)
+        if existingData then
+            playerData[playerID] = existingData[playerID]
+            playerData[playerID].lastPlayed = os.time()
+>>>>>>> Stashed changes
         else
-            tempData[genderName] = tempData[genderName] + 1
+            playerData[tostring(Player.id)] = {
+                house = Player.house,
+                gender = Player.gender,
+                lastPlayed = os.time()
+            }
+            savePlayerData(Player)
         end
     end
-    return tempData
 end
 
+function savePlayerData(Player)
+    local playerID = tostring(Player.id)
+    if playerData[playerID] then
+        local existingData = {}
+        if fileExists(DATA_FILE) then
+            existingData = json.decode(readFile(DATA_FILE))
+        end
+        existingData[playerID] = playerData[playerID]
+        local success = writeFile(DATA_FILE, json.encode(existingData))
+        return success
+    end
+    return false
+end
+
+function onPlayerJoin(Player)
+    loadPlayerData(Player)
+end
+
+function onPlayerLeave(Player)
+    local playerID = tostring(Player.id)
+    savePlayerData(Player)
+    playerData[playerID] = nil
+end
+
+function getPlayerData(Player)
+    local playerID = tostring(Player.id)
+    return playerData[playerID]
+end
+
+function onlinePlayers()
+    local count = 0
+    for _ in pairs(playerData) do
+        count = count + 1
+    end
+    return count
+end
+
+<<<<<<< Updated upstream
 local function countHouses()
     local tempData = {}
     for i,v in pairs(PlayersTable) do
@@ -99,11 +159,20 @@ local function countHouses()
             tempData[houseName] = 1
         else
             tempData[houseName] = tempData[houseName] + 1
+=======
+function countHouses()
+    local houses = {}
+    for _, data in pairs(playerData) do
+        local house = data.house
+        if house then
+            houses[PlayerHouses[house]] = (houses[PlayerHouses[house]] or 0) + 1
+>>>>>>> Stashed changes
         end
     end
-    return tempData
+    return houses
 end
 
+<<<<<<< Updated upstream
 -- Exports
 Exports("GetPlayerCount", function()
     return #PlayersTable
@@ -118,4 +187,34 @@ end)
 
 RegisterForEvent("player_left", function(Player)
     Track(Player, false)
+=======
+function countGenders()
+    local genders = {}
+    for _, data in pairs(playerData) do
+        local gender = data.gender
+        genders[PlayerGenders[gender]] = (genders[PlayerGenders[gender]] or 0) + 1
+    end
+    return genders
+end
+
+--[[
+    Exports
+]]
+
+Exports("getPlayerData", getPlayerData)
+Exports("onlinePlayers", onlinePlayers)
+Exports("countHouses", countHouses)
+Exports("countGenders", countGenders)
+
+--[[
+    Events
+]]
+
+RegisterForEvent("player_joined", function(Player)
+    onPlayerJoin(Player)
+end)
+
+RegisterForEvent("player_left", function(Player)
+    onPlayerLeave(Player)
+>>>>>>> Stashed changes
 end)
