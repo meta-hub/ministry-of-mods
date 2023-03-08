@@ -4,11 +4,7 @@ This module regulates creating NPCs
 
 ## For Developers
 
-<<<<<<< Updated upstream
-This module has 3 exports
-=======
 ### Exports
->>>>>>> Stashed changes
 ```LUA
     Exports.npc.CreatePed(gender, gear, features, house, spawnPos)
     Exports.npc.RemovePed(Ped)

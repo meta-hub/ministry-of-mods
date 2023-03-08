@@ -26,16 +26,6 @@ This module regulates the world
         --weather = "Astronomy"
     }
 
-<<<<<<< Updated upstream
-    Exports.world.SetWorldData(ExampleTable)
-
-    Exports.world.SyncWorldData() -- Forces the world to sync between players
-
-    -- EXAMPLE: If FreezeTime is on and you execute the trigger below, it will turn it off and vice versa. Same applies to Freeze Weather. Can include a BOOL to force a state.
-    Exports.world.FreezeTime() -- Forces the time to unfreeze
-    Exports.world.FreezeWeather() -- Forces the weather to freeze
-    Exports.world.GetWorldData() -- Get the current world's data
-=======
     Exports.world.setWorldData(ExampleTable)
 
     Exports.world.syncWorld() -- Forces the world to sync between players
@@ -44,5 +34,4 @@ This module regulates the world
     Exports.world.freezeTime(true) -- Forces the time to unfreeze
     Exports.world.freezeWeather() -- Forces the weather to freeze
     Exports.world.getWorldData() -- Get the current world's data
->>>>>>> Stashed changes
 ```

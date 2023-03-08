@@ -1,14 +1,10 @@
 local Peds = {}
 
-<<<<<<< Updated upstream
-local function CreatePed(gender, gear, features, house, spawnPos)
-=======
 --[[
     Functions
 ]]
 
 function CreatePed(gender, gear, features, house, spawnPos)
->>>>>>> Stashed changes
     local Ped = server.npc_manager:Create()
     Ped.gender = gender
     Ped.house = house

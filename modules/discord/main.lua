@@ -1,14 +1,10 @@
 local authorImage = nil
 
-<<<<<<< Updated upstream
-local function LogToDiscord(name, title, color, message, tagEveryone)
-=======
 --[[
     Functions
 ]]
 
 function LogToDiscord(name, title, color, message, tagEveryone)
->>>>>>> Stashed changes
     local colorMath = math.floor(color.r) * 65536 + math.floor(color.g) * 256 + math.floor(color.b)
     local body = nil
 
@@ -35,11 +31,6 @@ function LogToDiscord(name, title, color, message, tagEveryone)
         }}
     })
 
-<<<<<<< Updated upstream
-    print(message)
-
-=======
->>>>>>> Stashed changes
     --[[local succes, response, header = pcall(function()
 		return --REQUIRED HTTP REQUEST
 	end)

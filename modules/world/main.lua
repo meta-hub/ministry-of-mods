@@ -12,23 +12,6 @@ local WorldData = {
 local SyncTick, WeatherTick, SecondTick = 0, 0, 0
 local FreezeTime, FreezeWeather = Config.Time.FreezeTime, Config.Weather.FreezeWeather
 
-<<<<<<< Updated upstream
--- Functions
-local function get_days_in_month(month, year)
-    local days_in_month = {31,28,31,30,31,30,31,31,30,31,30,31}
-    local d = days_in_month[month]
-
-    if (month == 2) then
-        if (year % 4 == 0) then
-            if (year % 100 == 0)then
-                if (year % 400 == 0) then
-                    d = 29
-                end
-            else
-                d = 29
-            end
-        end
-=======
 --[[
     Functions
 ]]
@@ -37,7 +20,6 @@ function syncWorld()
     print("World Syncing")
     for i,v in pairs(WorldData) do
         world[i] = v
->>>>>>> Stashed changes
     end
     world:RpcSet()
 end
@@ -57,50 +39,11 @@ function daysInMonth(month, year)
     end
 end
 
-<<<<<<< Updated upstream
-local function WorldSync()
-    for i,v in pairs(WorldData) do
-        world[i] = v
-    end
-
-    world:RpcSet()
-
-    if Config.DiscordLogs then
-        Exports.discord.LogToDiscord("world", Locale.world_sync_title, {r = 165, g = 165, b = 165}, Locale.world_sync_message, false)
-    end
-end
-
-local function NewWeather()
-    local getSeason = Config.SeasonTypes[Config.SeasonTable[WorldData["month"]]]
-    local getWeather = Config.WeatherTypes[math.random(1,#Config.Seasons[getSeason])]
-
-    WorldData["weather"] = Config.WeatherTypes[getWeather]
-
-    WorldSync()
-end
-
-local function Initiate()
-    -- Set primary information to WorldData table
-    WorldData["hour"]       = world.hour
-    WorldData["minute"]     = world.minute
-    WorldData["second"]     = world.second
-    WorldData["year"]       = world.year
-    WorldData["month"]      = world.month
-    WorldData["day"]        = world.day
-    WorldData["season"]     = world.season
-    WorldData["weather"]    = world.weather
-
-    if type(Config.Time.hour) == "number" then
-        if Config.Time.hour >= 0 and Config.Time.hour <= 23 then
-            WorldData["hour"] = math.floor(Config.Time.hour)
-        end
-=======
 function Initiate()
     local time = Config.Time
     local weather = Config.Weather
     if type(time.hour) == "number" and time.hour >= 0 and time.hour <= 23 then
         WorldData.hour = math.floor(time.hour)
->>>>>>> Stashed changes
     end
     if type(time.minute) == "number" and time.minute >= 0 and time.minute <= 59 then
         WorldData.minute = math.floor(time.minute)
@@ -125,12 +68,7 @@ function Initiate()
     end
 end
 
-<<<<<<< Updated upstream
-local function Update(Delta)
-    SecondTick = SecondTick + Delta
-=======
 function Update(Delta)
->>>>>>> Stashed changes
     SyncTick = SyncTick + Delta
     SecondTick = SecondTick + Delta
     WeatherTick = WeatherTick + Delta
@@ -185,11 +123,6 @@ function Update(Delta)
     end
 end
 
-<<<<<<< Updated upstream
--- Exports
-
-Exports("SetWorldData", function(DataTable)
-=======
 
 --[[
     Exports Functions
@@ -199,7 +132,6 @@ function getWorldData()
 end
 
 function setWorldData(DataTable)
->>>>>>> Stashed changes
     if type(DataTable) == "table" then
         for i,v in pairs(Data) do
             if Config.Time[i] or Config.Weather[i] then
@@ -231,15 +163,6 @@ function freezeWeather(state)
             FreezeWeather = true
         end
     end
-<<<<<<< Updated upstream
-end)
-
-Exports("GetWorldData", function()
-    return WorldData
-end)
-
--- ConnectToEvents
-=======
 end
 
 --[[
@@ -256,15 +179,10 @@ Exports("freezeWeather", freezeWeather)
     Events
 ]]
 
->>>>>>> Stashed changes
 RegisterForEvent("init", function()
     Initiate()
 end)
 
-<<<<<<< Updated upstream
-CreateThread(function(DeltaTime)
-    Update(DeltaTime)
-=======
 CreateThread(function()
     local prevTime = GetGameTimer()
     while true do
@@ -274,5 +192,4 @@ CreateThread(function()
         prevTime = timeNow
         Update(deltaTime)
     end
->>>>>>> Stashed changes
 end)

@@ -1,9 +1,5 @@
 # Chat Command Module
 
-<<<<<<< Updated upstream
-This module at the moment **IS NOT FUNCTIONAL**.
-- This *will* manage Chat Commands
-=======
 This module at the moment **IS NOT FUNCTIONAL**
 - This *will* manage Chat Commands
 
@@ -24,4 +20,3 @@ This module at the moment **IS NOT FUNCTIONAL**
         print(Player)
     end, "mod")
 ```
->>>>>>> Stashed changes
