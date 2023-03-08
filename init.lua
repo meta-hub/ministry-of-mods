@@ -18,7 +18,7 @@ require("dependencies/math")
 -- File Validation
 --
 
-local function fileExists(path)
+function fileExists(path)
     local file = io.open(path, "r")
 
     if file then
@@ -28,7 +28,7 @@ local function fileExists(path)
     return file ~= nil
 end
 
-local function readFile(path)
+function readFile(path)
     local file = io.open(path, "r")
 
     if file == nil then
@@ -42,7 +42,7 @@ local function readFile(path)
     return code
 end
 
-local function writeFile(path, str)
+function writeFile(path, str)
     local file = io.open(path, "w+")
 
     if file == nil then
@@ -57,7 +57,7 @@ end
 
 --
 -- Global Config
--- 
+--
 
 local globalConfigFilePath = "data/config.json"
 
@@ -218,7 +218,7 @@ loadResource = function(_g, resourceName, options)
     if type(entryFileContent) ~= "string" then
         return error("resource has invalid resource.json entry file: " .. resourceName)
     end
-    
+
     local resourceDef = json.decode(entryFileContent)
 
     if type(resourceDef) ~= "table" then
@@ -270,12 +270,12 @@ end
 local eventListeners = {}
 
 function TriggerEvent(eventName, ...)
-    if type(eventName) ~= "string" then 
-        return error("TriggerEvent requires a string [eventName] as the first argument.") 
+    if type(eventName) ~= "string" then
+        return error("TriggerEvent requires a string [eventName] as the first argument.")
     end
 
-    if not eventListeners[eventName] then 
-        return 
+    if not eventListeners[eventName] then
+        return
     end
 
     for _,callback in ipairs(eventListeners[eventName]) do
@@ -284,12 +284,12 @@ function TriggerEvent(eventName, ...)
 end
 
 function AddEventHandler(eventName, callback)
-    if type(eventName) ~= "string" then 
-        return error("AddEventHandler requires a string [eventName] as the first argument.")   
+    if type(eventName) ~= "string" then
+        return error("AddEventHandler requires a string [eventName] as the first argument.")
     end
 
-    if type(callback) ~= "function" then 
-        return error("AddEventHandler requires a function [callback] as the second argument.") 
+    if type(callback) ~= "function" then
+        return error("AddEventHandler requires a function [callback] as the second argument.")
     end
 
     eventListeners[eventName] = eventListeners[eventName] or {}
@@ -307,12 +307,12 @@ local nativeListener = registerForEvent
 registerForEvent = nil
 
 function RegisterForEvent(eventName, callback)
-    if type(eventName) ~= "string" then 
-        return error("RegisterForEvent requires a string [eventName] as the first argument.")   
+    if type(eventName) ~= "string" then
+        return error("RegisterForEvent requires a string [eventName] as the first argument.")
     end
 
-    if type(callback) ~= "function" then 
-        return error("RegisterForEvent requires a function [callback] as the second argument.") 
+    if type(callback) ~= "function" then
+        return error("RegisterForEvent requires a function [callback] as the second argument.")
     end
 
     if eventName == "update" then
@@ -330,7 +330,7 @@ function RegisterForEvent(eventName, callback)
 
         nativeEventListeners[eventName] = listeners
     end
-    
+
     table.insert(nativeEventListeners[eventName], callback)
 end
 
@@ -426,13 +426,13 @@ end
 
 --
 -- Thread Tracker
--- 
+--
 
 local threads = {}
 
 function CreateThread(callback, ...)
-    if type(callback) ~= "function" then 
-        return error("CreateThread requires a function [callback] as the first argument.") 
+    if type(callback) ~= "function" then
+        return error("CreateThread requires a function [callback] as the first argument.")
     end
 
     local thread = {
@@ -441,7 +441,7 @@ function CreateThread(callback, ...)
         prevTime = GetGameTimer(),
         args = {...}
     }
-    
+
     local function Wait(waitTime)
         thread.waitTime = waitTime
         coroutine.yield(thread.coroutine)
@@ -462,17 +462,17 @@ function CreateThread(callback, ...)
     })
 
     setfenv(callback, threadMt)
-    
+
     table.insert(threads, thread)
 end
 
 function SetTimeout(callback, delay)
-    if type(callback) ~= "function" then 
-        return error("SetTimeout requires a function [callback] as the first argument.") 
+    if type(callback) ~= "function" then
+        return error("SetTimeout requires a function [callback] as the first argument.")
     end
 
-    if type(delay) ~= "number" then 
-        return error("SetTimeout requires a number [delay] as the second argument.") 
+    if type(delay) ~= "number" then
+        return error("SetTimeout requires a number [delay] as the second argument.")
     end
 
     local thread = {
@@ -481,7 +481,7 @@ function SetTimeout(callback, delay)
         prevTime = GetGameTimer(),
         kill = true
     }
-    
+
     table.insert(threads, thread)
 end
 

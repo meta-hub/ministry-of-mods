@@ -26,7 +26,7 @@ function loadPlayerData(Player)
     if fileExists(DATA_FILE) then
         local existingData = json.decode(readFile(DATA_FILE))
         local playerID = tostring(Player.id)
-        if existingData then
+        if existingData[playerID] then
             playerData[playerID] = existingData[playerID]
             playerData[playerID].lastPlayed = os.time()
         else
