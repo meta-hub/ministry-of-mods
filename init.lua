@@ -4,15 +4,15 @@ _G._PATH = io.popen("cd"):read("*l")
 -- Globalize JSON
 --
 
-require("library/json")
+require("dependencies/json")
 
 --
 -- LUA Extensions
 --
 
-require("library/string")
-require("library/table")
-require("library/math")
+require("dependencies/string")
+require("dependencies/table")
+require("dependencies/math")
 
 --
 -- File Validation
@@ -59,7 +59,7 @@ end
 -- Global Config
 --
 
-local globalConfigFilePath = "config.json"
+local globalConfigFilePath = "data/config.json"
 
 if not fileExists(globalConfigFilePath) then
     return error("No global config file found.")
@@ -519,7 +519,7 @@ end)
 -- Resource Initialization
 --
 
-local initResourceFilePath = "resources.json"
+local initResourceFilePath = "data/resources.json"
 
 if not fileExists(initResourceFilePath) then
     return error("resources.json is not present in root directory")
