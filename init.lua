@@ -532,6 +532,5 @@ if type(initResources) ~= "table" then
 end
 
 for _,resourceDef in ipairs(initResources) do
-    print(resourceDef.name)
     loadResource(_G, resourceDef.name, resourceDef.options or {})
 end
