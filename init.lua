@@ -132,8 +132,8 @@ local localesMt = {
 local loadResource
 local loadedResources = {}
 local loadResourceMt = {
-    __call = function(self, resourceName, options)
-        return loadResource(self._g, resourceName, options or {})
+    __call = function(self, resourceName, options, reload)
+        return loadResource(self._g, resourceName, options or {}, reload)
     end
 }
 
@@ -196,10 +196,10 @@ local function handleReturn(_g, resourceName, options, globalTable)
     end
 end
 
-loadResource = function(_g, resourceName, options)
+loadResource = function(_g, resourceName, options, reload)
     local version = options.version or "root"
 
-    if loadedResources[resourceName] and loadedResources[resourceName][version] then
+    if not reload and loadedResources[resourceName] and loadedResources[resourceName][version] then
         return handleReturn(_g, resourceName, options, loadedResources[resourceName][version])
     end
 
@@ -260,6 +260,12 @@ loadResource = function(_g, resourceName, options)
     loadedResources[resourceName] = loadedResources[resourceName] or {}
     loadedResources[resourceName][version] = globalTable
 
+    if reload then
+        TriggerEvent("resource_restarted", resourceName, version)
+    else
+        TriggerEvent("resource_started", resourceName, version)
+    end
+
     return handleReturn(_g, resourceName, options, globalTable)
 end
 
@@ -279,7 +285,8 @@ function TriggerEvent(eventName, ...)
     end
 
     for _,callback in ipairs(eventListeners[eventName]) do
-        CreateThread(callback, ...)
+        -- CreateThread(callback, ...)
+        callback(...)
     end
 end
 
@@ -315,10 +322,6 @@ function RegisterForEvent(eventName, callback)
         return error("RegisterForEvent requires a function [callback] as the second argument.") 
     end
 
-    if eventName == "update" then
-        return error("The native update event must be listened for with the CreateThread function.")
-    end
-
     if not nativeEventListeners[eventName] then
         local listeners = {}
 
@@ -350,7 +353,7 @@ function LoadResourceFile(resourceName, filePath)
     local path = _PATH .. "/modules/" .. resourceName .. "/" .. filePath
 
     if not fileExists(path) then
-        return error("invalid data file: " .. path)
+        return ""
     end
 
     local content = readFile(path)
@@ -388,7 +391,7 @@ end
 -- Data File Loader
 --
 
-function LoadData(resourceName, filePath)
+function LoadResourceData(resourceName, filePath)
     if type(resourceName) ~= "string" then
         return error("LoadData requires a string [resourceName] as the first argument.")
     end
@@ -406,7 +409,7 @@ function LoadData(resourceName, filePath)
     return json.decode(content)
 end
 
-function SaveData(resourceName, filePath, data)
+function SaveResourceData(resourceName, filePath, data)
     if type(resourceName) ~= "string" then
         return error("SaveData requires a string [resourceName] as the first argument.")
     end
@@ -428,92 +431,92 @@ end
 -- Thread Tracker
 -- 
 
-local threads = {}
+-- local threads = {}
 
-function CreateThread(callback, ...)
-    if type(callback) ~= "function" then 
-        return error("CreateThread requires a function [callback] as the first argument.") 
-    end
+-- function CreateThread(callback, ...)
+--     if type(callback) ~= "function" then 
+--         return error("CreateThread requires a function [callback] as the first argument.") 
+--     end
 
-    local thread = {
-        coroutine = coroutine.create(callback),
-        waitTime = -1,
-        prevTime = GetGameTimer(),
-        args = {...}
-    }
+--     local thread = {
+--         coroutine = coroutine.create(callback),
+--         waitTime = -1,
+--         prevTime = GetGameTimer(),
+--         args = {...}
+--     }
     
-    local function Wait(waitTime)
-        thread.waitTime = waitTime
-        coroutine.yield(thread.coroutine)
-    end
+--     local function Wait(waitTime)
+--         thread.waitTime = waitTime
+--         coroutine.yield(thread.coroutine)
+--     end
 
-    local env = getfenv(callback)
+--     local env = getfenv(callback)
 
-    local threadMt = setmetatable({}, {
-        __index = function(self, k)
-            if k == "Wait" then
-                return Wait
-            else
-                return env[k]
-            end
-        end,
+--     local threadMt = setmetatable({}, {
+--         __index = function(self, k)
+--             if k == "Wait" then
+--                 return Wait
+--             else
+--                 return env[k]
+--             end
+--         end,
 
-        __newindex = env
-    })
+--         __newindex = env
+--     })
 
-    setfenv(callback, threadMt)
+--     setfenv(callback, threadMt)
     
-    table.insert(threads, thread)
-end
+--     table.insert(threads, thread)
+-- end
 
-function SetTimeout(callback, delay)
-    if type(callback) ~= "function" then 
-        return error("SetTimeout requires a function [callback] as the first argument.") 
-    end
+-- function SetTimeout(callback, delay)
+--     if type(callback) ~= "function" then 
+--         return error("SetTimeout requires a function [callback] as the first argument.") 
+--     end
 
-    if type(delay) ~= "number" then 
-        return error("SetTimeout requires a number [delay] as the second argument.") 
-    end
+--     if type(delay) ~= "number" then 
+--         return error("SetTimeout requires a number [delay] as the second argument.") 
+--     end
 
-    local thread = {
-        coroutine = coroutine.create(callback),
-        waitTime = delay,
-        prevTime = GetGameTimer(),
-        kill = true
-    }
+--     local thread = {
+--         coroutine = coroutine.create(callback),
+--         waitTime = delay,
+--         prevTime = GetGameTimer(),
+--         kill = true
+--     }
     
-    table.insert(threads, thread)
-end
+--     table.insert(threads, thread)
+-- end
 
-local gameTime = 0
+-- local gameTime = 0
 
-function GetGameTimer()
-    return math.floor(gameTime * 1000)
-end
+-- function GetGameTimer()
+--     return math.floor(gameTime * 1000)
+-- end
 
-nativeListener("update", function(deltaTime)
-    gameTime = gameTime + deltaTime
+-- nativeListener("update", function(deltaTime)
+--     gameTime = gameTime + deltaTime
 
-    if #threads == 0 then
-        return
-    end
+--     if #threads == 0 then
+--         return
+--     end
 
-    local timeNow = GetGameTimer()
+--     local timeNow = GetGameTimer()
 
-    for i=#threads,1,-1 do
-        local thread = threads[i]
+--     for i=#threads,1,-1 do
+--         local thread = threads[i]
 
-        if thread.waitTime <= 0 or timeNow - thread.prevTime >= thread.waitTime then
-            coroutine.resume(thread.coroutine, table.unpack(thread.args))
+--         if thread.waitTime <= 0 or timeNow - thread.prevTime >= thread.waitTime then
+--             coroutine.resume(thread.coroutine, table.unpack(thread.args))
 
-            if thread.kill then
-                table.remove(threads, i)
-            else
-                thread.prevTime = timeNow
-            end
-        end
-    end
-end)
+--             if thread.kill then
+--                 table.remove(threads, i)
+--             else
+--                 thread.prevTime = timeNow
+--             end
+--         end
+--     end
+-- end)
 
 --
 -- Resource Initialization
@@ -533,4 +536,25 @@ end
 
 for _,resourceDef in ipairs(initResources) do
     loadResource(_G, resourceDef.name, resourceDef.options or {})
+end
+
+--
+-- Resource Reloader
+-- TODO:
+-- * Rewrite event registry system to allow removal of listeners on reload.
+-- * Same for threads, kill all resource threads on reload.
+--
+
+function ReloadResource(resourceName)
+    local _,resourceDef = table.search(initResources, function(_, resourceDef)
+        return resourceDef.name == resourceName
+    end)
+
+    if not resourceDef then
+        return
+    end
+
+    loadResource(_G, resourceDef.name, resourceDef.options or {}, true)
+
+    print("Resource reloaded: " .. resourceName)
 end

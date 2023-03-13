@@ -1,13 +1,19 @@
 function string:split(sep)
-    return self:gmatch(sep or "%S+")
+    sep = sep or " "
+
+    local pattern = string.format("([^%s]+)", sep)
+
+    return self:gmatch(pattern)
 end
 
 function string:splitT(sep)
-    sep = sep or "%S+"
+    sep = sep or " "
+
+    local pattern = string.format("([^%s]+)", sep)
 
     local ret = {}
 
-    for str in self:gmatch(sep) do
+    for str in self:gmatch(pattern) do
         ret[#ret+1] = str
     end
 
