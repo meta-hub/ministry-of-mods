@@ -114,7 +114,7 @@ local locales = {}
 
 local function translate(self, labelName)
     if not locales[self._RESOURCE] then
-        locales[self._RESOURCE] = LoadData(self._RESOURCE, "locales/" .. globalConfig.locale .. ".json")
+        locales[self._RESOURCE] = LoadResourceData(self._RESOURCE, "locales/" .. globalConfig.locale .. ".json")
     end
 
     return locales[self._RESOURCE][labelName]
@@ -393,11 +393,11 @@ end
 
 function LoadResourceData(resourceName, filePath)
     if type(resourceName) ~= "string" then
-        return error("LoadData requires a string [resourceName] as the first argument.")
+        return error("LoadResourceData requires a string [resourceName] as the first argument.")
     end
 
     if type(filePath) ~= "string" then
-        return error("LoadData requires a string [filePath] as the second argument.")
+        return error("LoadResourceData requires a string [filePath] as the second argument.")
     end
 
     local content = LoadResourceFile(resourceName, filePath)
@@ -411,15 +411,15 @@ end
 
 function SaveResourceData(resourceName, filePath, data)
     if type(resourceName) ~= "string" then
-        return error("SaveData requires a string [resourceName] as the first argument.")
+        return error("SaveResourceData requires a string [resourceName] as the first argument.")
     end
 
     if type(filePath) ~= "string" then
-        return error("SaveData requires a string [filePath] as the second argument.")
+        return error("SaveResourceData requires a string [filePath] as the second argument.")
     end
 
     if type(data) ~= "table" then
-        return error("SaveResourceFile requires a table [data] as the third argument.")
+        return error("SaveResourceData requires a table [data] as the third argument.")
     end
 
     local content = json.encode(data, { indent = true })
