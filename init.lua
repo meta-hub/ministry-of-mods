@@ -327,7 +327,12 @@ function RegisterForEvent(eventName, callback)
 
         nativeListener(eventName, function(...)
             for _,callback in ipairs(listeners) do
-                callback(...)
+                if eventName == "player_chat" then
+                    local value = callback(...)
+                    return value
+                else
+                    callback(...)
+                end
             end
         end)
 
